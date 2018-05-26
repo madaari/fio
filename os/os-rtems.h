@@ -11,24 +11,18 @@
 #include <sys/socket.h>
 #include <machine/param.h>
 #include <sys/cpuset.h>
-//#include <sys/statvfs.h>
-
-#include <sys/file.h>
+#include <sys/resource.h>
+#include "rtems/sys/ipc.h"
+#include "../file.h"
 
 #define FIO_HAVE_ODIRECT
 #define FIO_USE_GENERIC_RAND
 #define FIO_USE_GENERIC_INIT_RANDOM_STATE
-#define CTL_HW 6
-
+#define off64_t _off64_t
 #define OS_MAP_ANON		MAP_ANON
-
-
-static inline int blockdev_size(struct fio_file *f, unsigned long long *bytes)
-{
-	errno = ENOSYS;
-	return errno;
-}
-
+#define O_DIRECT	0x1000000
+#define FIO_NO_HAVE_SHM_H
+#define CONFIG_NO_SHM
 
 static inline int blockdev_invalidate_cache(struct fio_file *f)
 {

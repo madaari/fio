@@ -7,9 +7,13 @@
 #include <ctype.h>
 #include <string.h>
 #include <errno.h>
-#include <sys/ipc.h>
+
 #include <sys/types.h>
-#include <dlfcn.h>
+#ifdef __rtems__
+#include "os/rtems/dlfcn.h"
+#else
+#include "dlfcn.h"
+#endif
 #ifdef CONFIG_VALGRIND_DEV
 #include <valgrind/drd.h>
 #else
@@ -19,6 +23,12 @@
 #include "fio.h"
 #ifndef FIO_NO_HAVE_SHM_H
 #include <sys/shm.h>
+#endif
+
+#ifdef __rtems__
+#include "os/rtems/sys/ipc.h"
+#else
+#include <sys/ipc.h>
 #endif
 
 #include "parse.h"

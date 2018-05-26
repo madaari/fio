@@ -287,7 +287,7 @@ void show_group_stats(struct group_run_stats *rs, struct buf_output *out)
 	const char *str[] = { "   READ", "  WRITE" , "   TRIM"};
 	int i;
 
-	log_buf(out, "\nRun status group %d (all jobs):\n", rs->groupid);
+	log_buf(out, "\nRun status group %lu (all jobs):\n", rs->groupid);
 
 	for (i = 0; i < DDIR_RWDIR_CNT; i++) {
 		const int i2p = is_power_of_2(rs->kb_base);
@@ -719,7 +719,7 @@ static void show_block_infos(int nr_block_infos, uint32_t *block_infos,
 		uint32_t block_info = percentiles[i];
 #define LINE_LENGTH	75
 		char str[LINE_LENGTH];
-		int strln = snprintf(str, LINE_LENGTH, " %3.2fth=%u%c",
+		int strln = snprintf(str, LINE_LENGTH, " %3.2fth=%lu%c",
 				     plist[i].u.f, block_info,
 				     i == len - 1 ? '\n' : ',');
 		assert(strln < LINE_LENGTH);
@@ -789,11 +789,11 @@ static void show_thread_status_normal(struct thread_stat *ts,
 	os_ctime_r((const time_t *) &time_p, time_buf, sizeof(time_buf));
 
 	if (!ts->error) {
-		log_buf(out, "%s: (groupid=%d, jobs=%d): err=%2d: pid=%d: %s",
+		log_buf(out, "%s: (groupid=%lu, jobs=%lu): err=%2lu: pid=%d: %s",
 					ts->name, ts->groupid, ts->members,
 					ts->error, (int) ts->pid, time_buf);
 	} else {
-		log_buf(out, "%s: (groupid=%d, jobs=%d): err=%2d (%s): pid=%d: %s",
+		log_buf(out, "%s: (groupid=%lu, jobs=%lu): err=%2lu (%s): pid=%d: %s",
 					ts->name, ts->groupid, ts->members,
 					ts->error, ts->verror, (int) ts->pid,
 					time_buf);
@@ -864,13 +864,13 @@ static void show_thread_status_normal(struct thread_stat *ts,
 					(unsigned long long) ts->drop_io_u[1],
 					(unsigned long long) ts->drop_io_u[2]);
 	if (ts->continue_on_error) {
-		log_buf(out, "     errors    : total=%llu, first_error=%d/<%s>\n",
+		log_buf(out, "     errors    : total=%llu, first_error=%lu/<%s>\n",
 					(unsigned long long)ts->total_err_count,
 					ts->first_error,
 					strerror(ts->first_error));
 	}
 	if (ts->latency_depth) {
-		log_buf(out, "     latency   : target=%llu, window=%llu, percentile=%.2f%%, depth=%u\n",
+		log_buf(out, "     latency   : target=%llu, window=%llu, percentile=%.2f%%, depth=%lu\n",
 					(unsigned long long)ts->latency_target,
 					(unsigned long long)ts->latency_window,
 					ts->latency_percentile.u.f,
@@ -1158,9 +1158,9 @@ static void show_thread_status_terse_all(struct thread_stat *ts,
 
 	/* General Info */
 	if (ver == 2)
-		log_buf(out, "2;%s;%d;%d", ts->name, ts->groupid, ts->error);
+		log_buf(out, "2;%s;%lu;%lu", ts->name, ts->groupid, ts->error);
 	else
-		log_buf(out, "%d;%s;%s;%d;%d", ver, fio_version_string,
+		log_buf(out, "%d;%s;%s;%lu;%lu", ver, fio_version_string,
 			ts->name, ts->groupid, ts->error);
 
 	/* Log Read Status */
@@ -1210,7 +1210,7 @@ static void show_thread_status_terse_all(struct thread_stat *ts,
 
 	/* Additional output if continue_on_error set - default off*/
 	if (ts->continue_on_error)
-		log_buf(out, ";%llu;%d", (unsigned long long) ts->total_err_count, ts->first_error);
+		log_buf(out, ";%llu;%lu", (unsigned long long) ts->total_err_count, ts->first_error);
 	if (ver == 2)
 		log_buf(out, "\n");
 
@@ -1749,11 +1749,11 @@ void __show_run_stats(void)
 			ts->unified_rw_rep = td->o.unified_rw_rep;
 		} else if (ts->kb_base != td->o.kb_base && !kb_base_warned) {
 			log_info("fio: kb_base differs for jobs in group, using"
-				 " %u as the base\n", ts->kb_base);
+				 " %lu as the base\n", ts->kb_base);
 			kb_base_warned = true;
 		} else if (ts->unit_base != td->o.unit_base && !unit_base_warned) {
 			log_info("fio: unit_base differs for jobs in group, using"
-				 " %u as the base\n", ts->unit_base);
+				 " %lu as the base\n", ts->unit_base);
 			unit_base_warned = true;
 		}
 

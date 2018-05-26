@@ -12,7 +12,9 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
+#ifndef __rtems__
 #include <dlfcn.h>
+#endif
 #include <fcntl.h>
 #include <assert.h>
 
@@ -77,6 +79,8 @@ static struct ioengine_ops *find_ioengine(const char *name)
 static struct ioengine_ops *dlopen_ioengine(struct thread_data *td,
 					    const char *engine_lib)
 {
+	
+#ifndef __rtems__
 	struct ioengine_ops *ops;
 	void *dlhandle;
 
@@ -118,6 +122,9 @@ static struct ioengine_ops *dlopen_ioengine(struct thread_data *td,
 
 	td->io_ops_dlhandle = dlhandle;
 	return ops;
+#else
+	return NULL;
+#endif
 }
 
 static struct ioengine_ops *__load_ioengine(const char *name)
@@ -141,6 +148,7 @@ static struct ioengine_ops *__load_ioengine(const char *name)
 
 struct ioengine_ops *load_ioengine(struct thread_data *td)
 {
+#ifndef __rtems__	
 	struct ioengine_ops *ops = NULL;
 	const char *name;
 
@@ -178,6 +186,9 @@ struct ioengine_ops *load_ioengine(struct thread_data *td)
 		return NULL;
 
 	return ops;
+#else
+	return NULL;
+#endif
 }
 
 /*
@@ -185,6 +196,7 @@ struct ioengine_ops *load_ioengine(struct thread_data *td)
  */
 void free_ioengine(struct thread_data *td)
 {
+#ifndef __rtems__
 	dprint(FD_IO, "free ioengine %s\n", td->io_ops->name);
 
 	if (td->eo && td->io_ops->options) {
@@ -199,6 +211,7 @@ void free_ioengine(struct thread_data *td)
 	}
 
 	td->io_ops = NULL;
+#endif
 }
 
 void close_ioengine(struct thread_data *td)
