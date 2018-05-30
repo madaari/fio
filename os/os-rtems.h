@@ -23,6 +23,8 @@
 #define O_DIRECT	0x1000000
 #define FIO_NO_HAVE_SHM_H
 #define CONFIG_NO_SHM
+#define CONFIG_HAVE_MKDIR_TWO
+#define SA_RESTART	0
 
 static inline int blockdev_invalidate_cache(struct fio_file *f)
 {

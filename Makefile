@@ -44,13 +44,17 @@ SOURCE :=	$(sort $(patsubst $(SRCDIR)/%,%,$(wildcard $(SRCDIR)/crc/*.c)) \
 		eta.c verify.c memory.c io_u.c parse.c fio_sem.c rwlock.c \
 		pshared.c options.c \
 		smalloc.c filehash.c profile.c debug.c engines/cpu.c \
-		engines/mmap.c engines/sync.c engines/null.c engines/net.c \
+		engines/mmap.c engines/sync.c engines/null.c \
 		engines/ftruncate.c engines/filecreate.c \
-		server.c client.c iolog.c backend.c libfio.c flow.c cconv.c \
+		iolog.c backend.c libfio.c flow.c cconv.c \
 		gettime-thread.c helpers.c json.c idletime.c td_error.c \
 		profiles/tiobench.c profiles/act.c io_u_queue.c filelock.c \
 		workqueue.c rate-submit.c optgroup.c helper_thread.c \
 		steadystate.c
+
+ifdef FIO_OS_RTEMS_H
+SOURCE += engines/net.c client.c server.c
+endif
 
 ifdef CONFIG_LIBHDFS
   HDFSFLAGS= -I $(JAVA_HOME)/include -I $(JAVA_HOME)/include/linux -I $(FIO_LIBHDFS_INCLUDE)
@@ -194,10 +198,15 @@ ifneq (,$(findstring CYGWIN,$(CONFIG_TARGET_OS)))
   LIBS	 += -lpthread -lpsapi -lws2_32
   CFLAGS += -DPSAPI_VERSION=1 -Ios/windows/posix/include -Wno-format -static
 endif
+ifeq ($(CONFIG_TARGET_OS), RTEMS)
+  LDFLAGS += --pipe -L../sandbox/BBB/arm-rtems5/c/beagleboneblack/cpukit/posix/src  -B /home/uka_in/development/benchmark/sandbox/5/arm-rtems5/beagleboneblack/lib -B /home/uka_in/development/benchmark/sandbox/BBB/arm-rtems5/c/beagleboneblack/cpukit/rtems/ -specs bsp_specs -qrtems -mcpu=cortex-a8 -g -ffunction-sections -fdata-sections
+  LIBS	  += -lbsd -lrtemsbsp -lrtemscpu -lrtems
+  CFLAGS  += -I/home/uka_in/development/benchmark/sandbox/5/arm-rtems5/beagleboneblack/lib/include
+  endif
 
 OBJS := $(SOURCE:.c=.o)
 
-FIO_OBJS = $(OBJS) fio.o
+FIO_OBJS = $(OBJS) fio-rtems.o
 
 GFIO_OBJS = $(OBJS) gfio.o graph.o tickmarks.o ghelpers.o goptions.o gerror.o \
 			gclient.o gcompat.o cairo_text_helpers.o printing.o
