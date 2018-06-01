@@ -9,11 +9,7 @@
 #include <errno.h>
 
 #include <sys/types.h>
-#ifdef __rtems__
-#include "os/rtems/dlfcn.h"
-#else
 #include "dlfcn.h"
-#endif
 #ifdef CONFIG_VALGRIND_DEV
 #include <valgrind/drd.h>
 #else
@@ -25,11 +21,9 @@
 #include <sys/shm.h>
 #endif
 
-#ifdef __rtems__
-#include "os/rtems/sys/ipc.h"
-#else
+#ifndef __rtems__
 #include <sys/ipc.h>
-#endif
+#endif /* RTEMS */
 
 #include "parse.h"
 #include "smalloc.h"
