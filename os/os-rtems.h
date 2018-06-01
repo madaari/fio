@@ -12,6 +12,7 @@
 #include <machine/param.h>
 #include <sys/cpuset.h>
 #include <sys/resource.h>
+#include <stdatomic.h>
 #include "rtems/sys/ipc.h"
 #include "../file.h"
 

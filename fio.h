@@ -785,7 +785,11 @@ static inline void td_flags_clear(struct thread_data *td, unsigned int *flags,
 	if (!td_async_processing(td))
 		*flags &= ~value;
 	else
-		__sync_fetch_and_and(flags, ~value);
+		#ifdef __rtems__ 
+		atomic_fetch_and_explicit(flags, ~value, memory_order_relaxed);
+		#else
+		__sync_fetch_and_and(flags, value);
+		#endif /* RTEMS */
 }
 
 static inline void td_flags_set(struct thread_data *td, unsigned int *flags,
@@ -794,7 +798,11 @@ static inline void td_flags_set(struct thread_data *td, unsigned int *flags,
 	if (!td_async_processing(td))
 		*flags |= value;
 	else
+		#ifdef __rtems__ 
+		atomic_fetch_or_explicit(flags, ~value, memory_order_relaxed);
+		#else
 		__sync_fetch_and_or(flags, value);
+		#endif /* RTEMS */
 }
 
 extern const char *fio_get_arch_string(int);

@@ -47,7 +47,7 @@ void update_rusage_stat(struct thread_data *td)
 	ts->ctx  = ((uint64_t) -1);
 	ts->minf = ((uint64_t) -1);
 	ts->majf = ((uint64_t) -1);
-	#endif __rtems__ 
+	#endif /* RTEMS */
 
 	memcpy(&td->ru_start, &td->ru_end, sizeof(td->ru_end));
 }
