@@ -196,9 +196,9 @@ ifneq (,$(findstring CYGWIN,$(CONFIG_TARGET_OS)))
   CFLAGS += -DPSAPI_VERSION=1 -Ios/windows/posix/include -Wno-format -static
 endif
 ifeq ($(CONFIG_TARGET_OS), RTEMS)
-  LDFLAGS += --pipe -L../sandbox/BBB/arm-rtems5/c/beagleboneblack/cpukit/posix/src  -B /home/uka_in/development/benchmark/sandbox/5/arm-rtems5/beagleboneblack/lib -B /home/uka_in/development/benchmark/sandbox/BBB/arm-rtems5/c/beagleboneblack/cpukit/rtems/ -B /home/uka_in/development/benchmark/sandbox/BBB/arm-rtems5/c/beagleboneblack/cpukit/posix/ -specs bsp_specs -qrtems -mcpu=cortex-a8 -g -ffunction-sections -fdata-sections
+  LDFLAGS += --pipe -L$(BSP_PATH)/c/beagleboneblack/cpukit/posix/src  -B $(TOOL_PATH)/arm-rtems5/beagleboneblack/lib -B $(BSP_PATH)/c/beagleboneblack/cpukit/rtems/ -B $(BSP_PATH)/c/beagleboneblack/cpukit/posix/ -specs bsp_specs -qrtems -mcpu=cortex-a8 -g -ffunction-sections -fdata-sections
   LIBS	  += -lbsd -lc -lposix -lrtemsbsp -lrtemscpu -lrtems
-  CFLAGS  += -I/home/uka_in/development/benchmark/sandbox/5/arm-rtems5/beagleboneblack/lib/include
+  CFLAGS  += -I $(TOOL_PATH)/arm-rtems5/beagleboneblack/lib/include
   endif
 
 OBJS := $(SOURCE:.c=.o)
