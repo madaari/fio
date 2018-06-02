@@ -4747,7 +4747,7 @@ static char *bc_calc(char *str)
 	if ((!strchr(str, '+') && !strchr(str, '-') && !strchr(str, '*') &&
 	     !strchr(str, '/')) || strchr(str, '\''))
 		return str;
-
+#ifndef __rtems__
 	/*
 	 * Split option from value, we only need to calculate the value
 	 */
@@ -4785,6 +4785,9 @@ static char *bc_calc(char *str)
 	memcpy(buf, str, tmp - str);
 	free(str);
 	return strdup(buf);
+#else /* __rtems__ */
+	log_err("fio: performing math is not supported\n");
+#endif /* __rtems__ */
 }
 
 /*

@@ -4,16 +4,12 @@
 #define	FIO_OS	os_rtems
 
 #include <errno.h>
-//#include <sys/sysctl.h>
-//#include <sys/disk.h>
 #include <machine/endian.h>
-//#include <sys/thr.h>
 #include <sys/socket.h>
 #include <machine/param.h>
 #include <sys/cpuset.h>
 #include <sys/resource.h>
 #include <stdatomic.h>
-//#include "rtems/sys/ipc.h"
 #include "../file.h"
 
 #define FIO_HAVE_ODIRECT
@@ -31,7 +27,11 @@ static inline int blockdev_invalidate_cache(struct fio_file *f)
 {
 	return ENOTSUP;
 }
-
+static inline int blockdev_size(struct fio_file *f, unsigned long long *bytes)
+{
+	errno = ENOSYS;
+	return errno;
+}
 static inline unsigned long long os_phys_mem(void)
 {
 	errno = ENOSYS;

@@ -1692,10 +1692,15 @@ static void *thread_main(void *data)
 		goto err;
 
 	errno = 0;
+#ifndef __rtems__
 	if (nice(o->nice) == -1 && errno != 0) {
 		td_verror(td, errno, "nice");
 		goto err;
 	}
+#else /* __rtems__ */
+	td_verror(td, errno, "nice");
+	goto err;
+#endif /* __rtems__ */
 
 	if (o->ioscheduler && switch_ioscheduler(td))
 		goto err;
