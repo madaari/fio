@@ -196,10 +196,11 @@ ifneq (,$(findstring CYGWIN,$(CONFIG_TARGET_OS)))
   CFLAGS += -DPSAPI_VERSION=1 -Ios/windows/posix/include -Wno-format -static
 endif
 ifeq ($(CONFIG_TARGET_OS), RTEMS)
-  LDFLAGS += --pipe -L$(BSP_PATH)/c/beagleboneblack/cpukit/posix/src  -B $(TOOL_PATH)/arm-rtems5/beagleboneblack/lib -B $(BSP_PATH)/c/beagleboneblack/cpukit/rtems/ -B $(BSP_PATH)/c/beagleboneblack/cpukit/posix/ -specs bsp_specs -qrtems -mcpu=cortex-a8 -g -ffunction-sections -fdata-sections
-  LIBS	  += -lbsd -lc -lposix -lrtemsbsp -lrtemscpu -lrtems
-  CFLAGS  += -I $(TOOL_PATH)/arm-rtems5/beagleboneblack/lib/include
-  endif
+  LDFLAGS += -B $(TOOL_PATH)/arm-rtems5/beagleboneblack/lib -specs bsp_specs -qrtems -Wl,--gc-sections
+  LIBS	  += -lrtemsbsp -lrtemscpu -ldebugger -lbsd -lc -lgcc
+  CFLAGS  += -I $(TOOL_PATH)/arm-rtems5/beagleboneblack/lib/include -ffunction-sections -fdata-sections -g -mcpu=cortex-a8
+endif
+
 
 OBJS := $(SOURCE:.c=.o)
 
