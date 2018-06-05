@@ -1,157 +1,253 @@
 /*
- * RTEMS specific fio main file
+ * Copyright (c) 2010-2016 embedded brains GmbH.  All rights reserved.
  *
- * Copyright (C) 2005 Jens Axboe <axboe@suse.de>
- * Copyright (C) 2006-2012 Jens Axboe <axboe@kernel.dk>
- * Copyright (C) 2018 Christian Mauderer <christian.mauderer@embedded-brains.de>
- * Copyright (C) 2018 Udit Kumar Agarwal <dev.madaari@gmail.com>
+ *  embedded brains GmbH
+ *  Dornierstr. 4
+ *  82178 Puchheim
+ *  Germany
+ *  <rtems@embedded-brains.de>
  *
- * The license below covers all files distributed with fio unless otherwise
- * noted in the file itself.
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
  *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License version 2 as
- *  published by the Free Software Foundation.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
- *
+ * THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+ * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+ * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGE.
  */
 
-#include "fio.h"
+#include <sys/param.h>
 
+#include <assert.h>
+#include <stdio.h>
 #include <stdlib.h>
-#include <rtems.h>
-#include <bsp.h>
+#include <string.h>
+
+#include <rtems/bdbuf.h>
+#include <rtems/console.h>
+#include <rtems/ftpd.h>
+#include <rtems/media.h>
 #include <rtems/shell.h>
+#include <rtems/telnetd.h>
 
-#define PRIO_DHCP		(RTEMS_MAXIMUM_PRIORITY - 1)
-#define PRIO_WPA		(RTEMS_MAXIMUM_PRIORITY - 1)
-#define PRIO_INIT_TASK		(RTEMS_MAXIMUM_PRIORITY - 1)
-#define PRIO_MEDIA_SERVER	200
+#define TEST_NAME "LIBBSD MEDIA 1"
 
-int fio_main(int argc, char *argv[], char *envp[])
+struct rtems_ftpd_configuration rtems_ftpd_configuration = {
+	/* FTPD task priority */
+	.priority = 100,
+
+	/* Maximum buffersize for hooks */
+	.max_hook_filesize = 0,
+
+	/* Well-known port */
+	.port = 21,
+
+	/* List of hooks */
+	.hooks = NULL,
+
+	/* Root for FTPD or NULL for "/" */
+	.root = NULL,
+
+	/* Max. connections depending on processor count */
+	.tasks_count = 0,
+
+	/* Idle timeout in seconds  or 0 for no (infinite) timeout */
+	.idle = 5 * 60,
+
+	/* Access: 0 - r/w, 1 - read-only, 2 - write-only, 3 - browse-only */
+	.access = 0
+};
+
+static rtems_status_code
+media_listener(rtems_media_event event, rtems_media_state state,
+    const char *src, const char *dest, void *arg)
 {
-	int ret = 1;
+	printf(
+		"media listener: event = %s, state = %s, src = %s",
+		rtems_media_event_description(event),
+		rtems_media_state_description(state),
+		src
+	);
 
-	compiletime_assert(TD_NR <= TD_ENG_FLAG_SHIFT, "TD_ENG_FLAG_SHIFT");
+	if (dest != NULL) {
+		printf(", dest = %s", dest);
+	}
 
-	if (initialize_fio(envp))
-		return 1;
+	if (arg != NULL) {
+		printf(", arg = %p\n", arg);
+	}
 
-#if !defined(CONFIG_GETTIMEOFDAY) && !defined(CONFIG_CLOCK_GETTIME)
-#error "No available clock source!"
-#endif
+	printf("\n");
 
-	if (fio_server_create_sk_key())
-		goto done;
+	if (event == RTEMS_MEDIA_EVENT_MOUNT && state == RTEMS_MEDIA_STATE_SUCCESS) {
+		char name[256];
+		int n = snprintf(&name[0], sizeof(name), "%s/test.txt", dest);
+		FILE *file;
 
-	if (parse_options(argc, argv))
-		goto done_key;
+		assert(n < (int) sizeof(name));
 
-	/*
-	 * line buffer stdout to avoid output lines from multiple
-	 * threads getting mixed
-	 */
-	setvbuf(stdout, NULL, _IOLBF, 0);
+		printf("write file %s\n", &name[0]);
+		file = fopen(&name[0], "w");
+		if (file != NULL) {
+			const char hello[] = "Hello, world!\n";
 
-	fio_time_init();
+			fwrite(&hello[0], sizeof(hello) - 1, 1, file);
+			fclose(file);
+		}
+	}
 
-	if (nr_clients) {
-		set_genesis_time();
-
-		if (fio_start_all_clients())
-			goto done_key;
-		ret = fio_handle_clients(&fio_client_ops);
-	} else
-		ret = fio_backend(NULL);
-
-done_key:
-	fio_server_destroy_sk_key();
-done:
-	deinitialize_fio();
-	return ret;
+	return RTEMS_SUCCESSFUL;
 }
 
 static void
-Init(rtems_task_argument arg)
+telnet_shell(char *name, void *arg)
 {
-
-	puts("\nRTEMS FIO \n");
 	rtems_shell_env_t env;
 
-    memset(&env, 0, sizeof(env));
-    rtems_shell_main_loop(&env);
+	memset(&env, 0, sizeof(env));
+
+	env.devname = name;
+	env.taskname = "TLNT";
+	env.login_check = NULL;
+	env.forever = false;
+
+	rtems_shell_main_loop(&env);
+}
+
+rtems_telnetd_config_table rtems_telnetd_config = {
+	.command = telnet_shell,
+	.arg = NULL,
+	.priority = 0,
+	.stack_size = 0,
+	.login_check = NULL,
+	.keep_stdio = false
+};
+
+static void
+test_main(void)
+{
+	int rv;
+	rtems_status_code sc;
+	puts("running main test\n");
+	rtems_ftpd_configuration.tasks_count = MAX(4,
+	    rtems_get_processor_count());
+	rv = rtems_initialize_ftpd();
+	assert(rv == 0);
+
+	sc = rtems_telnetd_initialize();
+	assert(sc == RTEMS_SUCCESSFUL);
+
+	sc = rtems_shell_init("SHLL", 16 * 1024, 1, CONSOLE_DEVICE_NAME,
+	    false, true, NULL);
+	assert(sc == RTEMS_SUCCESSFUL);
+
 	exit(0);
 }
 
-rtems_shell_cmd_t rtems_shell_fio_Command = {
-    .name = "fio",
-    .usage = "fio",
-    .topic = "user",
-    .command = fio_main
-};
+#define DEFAULT_EARLY_INITIALIZATION
 
-/*
- * Configure LibBSD.
- */
-#define RTEMS_BSD_CONFIG_BSP_CONFIG
-#define RTEMS_BSD_CONFIG_TERMIOS_KQUEUE_AND_POLL
-#define RTEMS_BSD_CONFIG_INIT
+static void
+early_initialization(void)
+{
+	rtems_status_code sc;
+	puts("running early init\n");
+	sc = rtems_bdbuf_init();
+	assert(sc == RTEMS_SUCCESSFUL);
 
-#include <machine/rtems-bsd-config.h>
+	sc = rtems_media_initialize();
+	assert(sc == RTEMS_SUCCESSFUL);
 
-/*
- * Configure RTEMS.
- */
+	sc = rtems_media_listener_add(media_listener, NULL);
+	assert(sc == RTEMS_SUCCESSFUL);
+
+	sc = rtems_media_server_initialize(
+		200,
+		32 * 1024,
+		RTEMS_DEFAULT_MODES,
+		RTEMS_DEFAULT_ATTRIBUTES
+	);
+	assert(sc == RTEMS_SUCCESSFUL);
+	puts("end early init\n");
+}
+
+#define DEFAULT_NETWORK_DHCPCD_ENABLE
+
 #define CONFIGURE_MICROSECONDS_PER_TICK 1000
 
-#define CONFIGURE_APPLICATION_NEEDS_CLOCK_DRIVER
-#define CONFIGURE_APPLICATION_NEEDS_CONSOLE_DRIVER
-#define CONFIGURE_APPLICATION_NEEDS_STUB_DRIVER
-#define CONFIGURE_APPLICATION_NEEDS_ZERO_DRIVER
-#define CONFIGURE_APPLICATION_NEEDS_LIBBLOCK
+#define CONFIGURE_MAXIMUM_DRIVERS 32
 
 #define CONFIGURE_FILESYSTEM_DOSFS
-#define CONFIGURE_LIBIO_MAXIMUM_FILE_DESCRIPTORS 32
 
-#define CONFIGURE_UNLIMITED_OBJECTS
-#define CONFIGURE_UNIFIED_WORK_AREAS
-#define CONFIGURE_MAXIMUM_USER_EXTENSIONS 1
+#define CONFIGURE_MAXIMUM_PROCESSORS 32
 
-#define CONFIGURE_INIT_TASK_STACK_SIZE (64*1024)
-#define CONFIGURE_INIT_TASK_INITIAL_MODES RTEMS_DEFAULT_MODES
-#define CONFIGURE_INIT_TASK_ATTRIBUTES RTEMS_FLOATING_POINT
+#include <os/rtems/default-network-init.h>
 
-#define CONFIGURE_BDBUF_BUFFER_MAX_SIZE (32 * 1024)
-#define CONFIGURE_BDBUF_MAX_READ_AHEAD_BLOCKS 4
-#define CONFIGURE_BDBUF_CACHE_MEMORY_SIZE (1 * 1024 * 1024)
-#define CONFIGURE_BDBUF_READ_AHEAD_TASK_PRIORITY 97
-#define CONFIGURE_SWAPOUT_TASK_PRIORITY 97
-
-//#define CONFIGURE_STACK_CHECKER_ENABLED
-
-#define CONFIGURE_RTEMS_INIT_TASKS_TABLE
-#define CONFIGURE_INIT
-
-#include <rtems/confdefs.h>
-
-/*
- * Configure Shell.
- */
-#include <rtems/netcmds-config.h>
-#include <bsp/irq-info.h>
 #define CONFIGURE_SHELL_COMMANDS_INIT
 
-#define CONFIGURE_SHELL_USER_COMMANDS \
-  &rtems_shell_fio_Command
+#include <bsp/irq-info.h>
 
-#define CONFIGURE_SHELL_COMMANDS_ALL
+#include <rtems/netcmds-config.h>
+
+#ifdef RTEMS_BSD_MODULE_USR_SBIN_WPA_SUPPLICANT
+  #define SHELL_WPA_SUPPLICANT_COMMANDS \
+    &rtems_shell_WPA_SUPPLICANT_Command, \
+    &rtems_shell_WPA_SUPPLICANT_FORK_Command,
+#else
+  #define SHELL_WPA_SUPPLICANT_COMMANDS
+#endif
+
+#define CONFIGURE_SHELL_USER_COMMANDS \
+  SHELL_WPA_SUPPLICANT_COMMANDS \
+  &bsp_interrupt_shell_command, \
+  &rtems_shell_ARP_Command, \
+  &rtems_shell_HOSTNAME_Command, \
+  &rtems_shell_PING_Command, \
+  &rtems_shell_ROUTE_Command, \
+  &rtems_shell_NETSTAT_Command, \
+  &rtems_shell_SYSCTL_Command, \
+  &rtems_shell_IFCONFIG_Command, \
+  &rtems_shell_VMSTAT_Command
+
+#define CONFIGURE_SHELL_COMMAND_CPUINFO
+#define CONFIGURE_SHELL_COMMAND_CPUUSE
+#define CONFIGURE_SHELL_COMMAND_PERIODUSE
+#define CONFIGURE_SHELL_COMMAND_STACKUSE
+#define CONFIGURE_SHELL_COMMAND_PROFREPORT
+
+#define CONFIGURE_SHELL_COMMAND_CP
+#define CONFIGURE_SHELL_COMMAND_PWD
+#define CONFIGURE_SHELL_COMMAND_LS
+#define CONFIGURE_SHELL_COMMAND_LN
+#define CONFIGURE_SHELL_COMMAND_LSOF
+#define CONFIGURE_SHELL_COMMAND_CHDIR
+#define CONFIGURE_SHELL_COMMAND_CD
+#define CONFIGURE_SHELL_COMMAND_MKDIR
+#define CONFIGURE_SHELL_COMMAND_RMDIR
+#define CONFIGURE_SHELL_COMMAND_CAT
+#define CONFIGURE_SHELL_COMMAND_MV
+#define CONFIGURE_SHELL_COMMAND_RM
+#define CONFIGURE_SHELL_COMMAND_MALLOC_INFO
+
+#define CONFIGURE_SHELL_COMMAND_FDISK
+#define CONFIGURE_SHELL_COMMAND_BLKSTATS
+#define CONFIGURE_SHELL_COMMAND_BLKSYNC
+#define CONFIGURE_SHELL_COMMAND_MSDOSFMT
+#define CONFIGURE_SHELL_COMMAND_DF
+#define CONFIGURE_SHELL_COMMAND_MOUNT
+#define CONFIGURE_SHELL_COMMAND_UNMOUNT
+#define CONFIGURE_SHELL_COMMAND_MSDOSFMT
 
 #include <rtems/shellconfig.h>
