@@ -19,7 +19,7 @@
 #define SMALLOC_BPL	(SMALLOC_BPB * SMALLOC_BPI)
 
 #define INITIAL_SIZE	16*1024*1024	/* new pool size */
-#define INITIAL_POOLS	8		/* maximum number of pools to setup */
+#define INITIAL_POOLS	2		/* maximum number of pools to setup */
 
 #define MAX_POOLS	16
 
@@ -170,30 +170,38 @@ static bool add_pool(struct pool *pool, unsigned int alloc_size)
 	pool->free_blocks = bitmap_blocks * SMALLOC_BPB;
 
 	mmap_flags = OS_MAP_ANON;
-#ifdef CONFIG_ESX
+#if defined(CONFIG_ESX)||defined(__rtems__)
 	mmap_flags |= MAP_PRIVATE;
 #else
 	mmap_flags |= MAP_SHARED;
 #endif
-	ptr = mmap(NULL, alloc_size, PROT_READ|PROT_WRITE, mmap_flags, -1, 0);
+	//ptr = mmap(NULL, alloc_size, PROT_READ|PROT_WRITE, mmap_flags, -1, 0);
+	ptr = (void*)malloc(alloc_size);
 
 	if (ptr == MAP_FAILED)
-		goto out_fail;
+	{
+		printf("MMAP_FAILED!\n");
+		printf("alloc_size=%u flag:%d\n",alloc_size,mmap_flags);
+		goto out_fail;}
 
 	pool->map = ptr;
 	pool->bitmap = (unsigned int *)((char *) ptr + (pool->nr_blocks * SMALLOC_BPL));
+	printf("MEMSET called pool->bitmap=%p size=%u \n",pool->bitmap,bitmap_blocks * sizeof(unsigned int));
 	memset(pool->bitmap, 0, bitmap_blocks * sizeof(unsigned int));
-
+	printf("MEMSET over");
 	pool->lock = fio_sem_init(FIO_SEM_UNLOCKED);
-	if (!pool->lock)
+	if (!pool->lock){
+		printf("LOCK_FAILED!");
 		goto out_fail;
+	}
 
 	nr_pools++;
 	return true;
 out_fail:
 	log_err("smalloc: failed adding pool\n");
 	if (pool->map)
-		munmap(pool->map, pool->mmap_size);
+		//munmap(pool->map, pool->mmap_size);
+		free(pool->map);
 	return false;
 }
 
