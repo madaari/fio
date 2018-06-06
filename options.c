@@ -4638,6 +4638,7 @@ static void options_to_lopts(struct fio_option *opts,
 
 		i++;
 		o++;
+		
 		assert(i < FIO_NR_OPTIONS);
 	}
 }
@@ -4654,6 +4655,7 @@ void fio_options_set_ioengine_opts(struct option *long_options,
 			break;
 		}
 		i++;
+		printf("Value of i is %d \n",i);
 	}
 
 	/*
@@ -4673,8 +4675,9 @@ void fio_options_dup_and_init(struct option *long_options)
 	options_init(fio_options);
 
 	i = 0;
-	while (long_options[i].name)
-		i++;
+	while (long_options[i].name){
+		printf("Value of i2 is %d \n",i);
+		i++;}
 
 	options_to_lopts(fio_options, long_options, i, FIO_GETOPT_JOB);
 }
