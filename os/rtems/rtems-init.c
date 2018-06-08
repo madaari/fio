@@ -28,13 +28,6 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-#ifdef __rtems__
-#include <machine/rtems-bsd-user-space.h>
-#include <machine/rtems-bsd-program.h>
-#include "os/rtems/headers/rtems-bsd-fio-namespace.h"
-#include "parse.h"
-#endif /* __rtems__ */
-
 #include <sys/param.h>
 #include <sys/stat.h>
 #include <sys/socket.h>
@@ -65,31 +58,10 @@
 #include <rtems/dhcpcd.h>
 #include <rtems/console.h>
 #include <rtems/shell.h>
-#include <rtems/linkersets.h>
-#include "headers/rtems-bsd-fio-data.h"
-
-int main(int argc, char *argv[]);
-
-RTEMS_LINKER_RWSET(bsd_prog_fio, char);
-
-rtems_bsd_command_fio(int argc, char *argv[])
-{
-    int exit_code;
-    void *data_begin;
-    size_t data_size;
-
-    data_begin = RTEMS_LINKER_SET_BEGIN(bsd_prog_fio);
-    data_size = RTEMS_LINKER_SET_SIZE(bsd_prog_fio);
-
-    rtems_bsd_program_lock();
-    exit_code = rtems_bsd_program_call_main_with_data_restore("fio",
-        main, argc, argv, data_begin, data_size);
-    rtems_bsd_program_unlock();
-
-    return exit_code;
-}
 
 #define DEFAULT_NETWORK_SHELL
+
+rtems_bsd_command_fio(int argc, char *argv[]);
 
 static rtems_status_code
 media_listener(rtems_media_event event, rtems_media_state state,
@@ -174,14 +146,6 @@ Init(rtems_task_argument arg)
 
 #define CONFIGURE_MAXIMUM_PROCESSORS 32
 
-#if defined(DEFAULT_NETWORK_DHCPCD_ENABLE) && \
-    !defined(DEFAULT_NETWORK_NO_STATIC_IFCONFIG)
-#define DEFAULT_NETWORK_NO_STATIC_IFCONFIG
-#endif
-
-#ifndef DEFAULT_NETWORK_NO_STATIC_IFCONFIG
-#include <rtems/bsd/test/network-config.h>
-#endif
 /*
  * Configure LibBSD.
  */

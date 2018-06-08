@@ -29,7 +29,7 @@
 #endif /* __rtems__ */
 
 #include "fio.h"
-
+static
 int main(int argc, char *argv[], char *envp[])
 {
 	int ret = 1;
@@ -72,6 +72,26 @@ done:
 	deinitialize_fio();
 	return ret;
 }
+
 #ifdef __rtems__
 #include "os/rtems/headers/rtems-bsd-fio-fio-data.h"
 #endif /* __rtems__ */
+
+RTEMS_LINKER_RWSET(bsd_prog_fio, char);
+
+rtems_bsd_command_fio(int argc, char *argv[])
+{
+    int exit_code;
+    void *data_begin;
+    size_t data_size;
+
+    data_begin = RTEMS_LINKER_SET_BEGIN(bsd_prog_fio);
+    data_size = RTEMS_LINKER_SET_SIZE(bsd_prog_fio);
+
+    rtems_bsd_program_lock();
+    exit_code = rtems_bsd_program_call_main_with_data_restore("fio",
+        main, argc, argv, data_begin, data_size);
+    rtems_bsd_program_unlock();
+
+    return exit_code;
+}
