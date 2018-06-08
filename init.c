@@ -1,6 +1,13 @@
 /*
  * This file contains job initialization and setup functions.
  */
+
+#ifdef __rtems__
+#include <machine/rtems-bsd-user-space.h>
+#include <machine/rtems-bsd-program.h>
+#include "os/rtems/headers/rtems-bsd-fio-namespace.h"
+#endif /* __rtems__ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -2989,3 +2996,6 @@ struct thread_data *get_global_options(void)
 {
 	return &def_thread;
 }
+#ifdef __rtems__
+#include "os/rtems/headers/rtems-bsd-fio-init-data.h"
+#endif /* __rtems__ */

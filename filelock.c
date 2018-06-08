@@ -3,6 +3,12 @@
  * No hash indexing, just a list, so only works well for < 100 files or
  * so. But that's more than what fio needs, so should be fine.
  */
+#ifdef __rtems__
+#include <machine/rtems-bsd-user-space.h>
+#include <machine/rtems-bsd-program.h>
+#include "os/rtems/headers/rtems-bsd-fio-namespace.h"
+#endif /* __rtems__ */
+
 #include <inttypes.h>
 #include <string.h>
 #include <unistd.h>
@@ -244,3 +250,6 @@ void fio_unlock_file(const char *fname)
 
 	fio_sem_up(&fld->lock);
 }
+#ifdef __rtems__
+#include "os/rtems/headers/rtems-bsd-fio-filelock-data.h"
+#endif /* __rtems__ */

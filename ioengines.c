@@ -9,6 +9,12 @@
  * generic io engine that could be used for other projects.
  *
  */
+#ifdef __rtems__
+#include <machine/rtems-bsd-user-space.h>
+#include <machine/rtems-bsd-program.h>
+#include "os/rtems/headers/rtems-bsd-fio-namespace.h"
+#endif /* __rtems__ */
+
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
@@ -623,3 +629,6 @@ int fio_show_ioengine_help(const char *engine)
 	free_ioengine(&td);
 	return ret;
 }
+#ifdef __rtems__
+#include "os/rtems/headers/rtems-bsd-fio-ioengines-data.h"
+#endif /* __rtems__ */

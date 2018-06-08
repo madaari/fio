@@ -1,3 +1,9 @@
+#ifdef __rtems__
+#include <machine/rtems-bsd-user-space.h>
+#include <machine/rtems-bsd-program.h>
+#include "../os/rtems/headers/rtems-bsd-fio-namespace.h"
+#endif /* __rtems__ */
+
 #include <assert.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -118,3 +124,6 @@ done:
 			unitprefix[post_index], unitstr[units]);
 	return buf;
 }
+#ifdef __rtems__
+#include "../os/rtems/headers/rtems-bsd-fio-num2str-data.h"
+#endif /* __rtems__ */

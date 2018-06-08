@@ -1,3 +1,9 @@
+#ifdef __rtems__
+#include <machine/rtems-bsd-user-space.h>
+#include <machine/rtems-bsd-program.h>
+#include "os/rtems/headers/rtems-bsd-fio-namespace.h"
+#endif /* __rtems__ */
+
 #include <math.h>
 #include "fio.h"
 #include "json.h"
@@ -502,3 +508,6 @@ void show_idle_prof_stats(int output, struct json_object *parent,
 		fio_idle_prof_cleanup();
 	}
 }
+#ifdef __rtems__
+#include "os/rtems/headers/rtems-bsd-fio-idletime-data.h"
+#endif /* __rtems__ */

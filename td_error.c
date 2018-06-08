@@ -1,3 +1,9 @@
+#ifdef __rtems__
+#include <machine/rtems-bsd-user-space.h>
+#include <machine/rtems-bsd-program.h>
+#include "os/rtems/headers/rtems-bsd-fio-namespace.h"
+#endif /* __rtems__ */
+
 #include "fio.h"
 #include "io_ddir.h"
 #include "td_error.h"
@@ -38,3 +44,6 @@ void update_error_count(struct thread_data *td, int err)
 	if (td->total_err_count == 1)
 		td->first_error = err;
 }
+#ifdef __rtems__
+#include "os/rtems/headers/rtems-bsd-fio-td_error-data.h"
+#endif /* __rtems__ */

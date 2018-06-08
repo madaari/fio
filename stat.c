@@ -1,3 +1,9 @@
+#ifdef __rtems__
+#include <machine/rtems-bsd-user-space.h>
+#include <machine/rtems-bsd-program.h>
+#include "os/rtems/headers/rtems-bsd-fio-namespace.h"
+#endif /* __rtems__ */
+
 #include <stdio.h>
 #include <string.h>
 #include <sys/time.h>
@@ -2723,3 +2729,6 @@ uint32_t *io_u_block_info(struct thread_data *td, struct io_u *io_u)
 	assert(idx < td->ts.nr_block_infos);
 	return info;
 }
+#ifdef __rtems__
+#include "os/rtems/headers/rtems-bsd-fio-stat-data.h"
+#endif /* __rtems__ */

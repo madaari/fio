@@ -1,3 +1,9 @@
+#ifdef __rtems__
+#include <machine/rtems-bsd-user-space.h>
+#include <machine/rtems-bsd-program.h>
+#include "../os/rtems/headers/rtems-bsd-fio-namespace.h"
+#endif /* __rtems__ */
+
 #include "fnv.h"
 
 #define FNV_PRIME	0x100000001b3ULL
@@ -32,3 +38,6 @@ uint64_t fnv(const void *buf, uint32_t len, uint64_t hval)
 
 	return hval;
 }
+#ifdef __rtems__
+#include "../os/rtems/headers/rtems-bsd-fio-fnv-data.h"
+#endif /* __rtems__ */

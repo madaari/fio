@@ -4,6 +4,12 @@
  * Copyright (C) 2015 Jens Axboe <axboe@kernel.dk>
  *
  */
+#ifdef __rtems__
+#include <machine/rtems-bsd-user-space.h>
+#include <machine/rtems-bsd-program.h>
+#include "os/rtems/headers/rtems-bsd-fio-namespace.h"
+#endif /* __rtems__ */
+
 #include <unistd.h>
 
 #include "fio.h"
@@ -375,3 +381,6 @@ err:
 	workqueue_exit(wq);
 	return 1;
 }
+#ifdef __rtems__
+#include "os/rtems/headers/rtems-bsd-fio-workqueue-data.h"
+#endif /* __rtems__ */

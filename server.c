@@ -1,3 +1,9 @@
+#ifdef __rtems__
+#include <machine/rtems-bsd-user-space.h>
+#include <machine/rtems-bsd-program.h>
+#include "os/rtems/headers/rtems-bsd-fio-namespace.h"
+#endif /* __rtems__ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -1092,10 +1098,11 @@ static int fio_send_cmd_ext_pdu(int sk, uint16_t opcode, const void *buf,
 
 static void finish_entry(struct sk_entry *entry)
 {
-	if (entry->flags & SK_F_FREE)
+	if (entry->flags & SK_F_FREE){
 		free(entry->buf);
-	else if (entry->flags & SK_F_COPY)
+	}else if (entry->flags & SK_F_COPY){
 		sfree(entry->buf);
+	}
 
 	sfree(entry);
 }
@@ -2589,3 +2596,6 @@ void fio_server_set_arg(const char *arg)
 {
 	fio_server_arg = strdup(arg);
 }
+#ifdef __rtems__
+#include "os/rtems/headers/rtems-bsd-fio-server-data.h"
+#endif /* __rtems__ */

@@ -1,3 +1,9 @@
+#ifdef __rtems__
+#include <machine/rtems-bsd-user-space.h>
+#include <machine/rtems-bsd-program.h>
+#include "os/rtems/headers/rtems-bsd-fio-namespace.h"
+#endif /* __rtems__ */
+
 #include <stdio.h>
 #include <string.h>
 #include <sys/mman.h>
@@ -55,7 +61,6 @@ int __fio_sem_init(struct fio_sem *sem, int value)
 struct fio_sem *fio_sem_init(int value)
 {
 	struct fio_sem *sem = NULL;
-	printf("chkpnt#1\n");
 #ifndef __rtems__
 	sem = (void *) mmap(NULL, sizeof(struct fio_sem),
 				PROT_READ | PROT_WRITE,
@@ -65,15 +70,12 @@ struct fio_sem *fio_sem_init(int value)
 				PROT_READ | PROT_WRITE,
 				OS_MAP_ANON | MAP_PRIVATE, -1, 0);
 #endif
-	printf("chkpnt#2\n");
 	if (sem == MAP_FAILED) {
 		perror("mmap semaphore");
 		return NULL;
 	}
-	printf("chkpnt#3\n");
 	if (!__fio_sem_init(sem, value))
 		return sem;
-	printf("chkpnt#4\n");
 	fio_sem_remove(sem);
 	return NULL;
 }
@@ -183,3 +185,7 @@ void fio_sem_up(struct fio_sem *sem)
 
 	pthread_mutex_unlock(&sem->lock);
 }
+
+#ifdef __rtems__
+#include "os/rtems/headers/rtems-bsd-fio-fio_sem-data.h"
+#endif /* __rtems__ */

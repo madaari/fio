@@ -3,6 +3,11 @@
  * optimized to do word accesses rather than byte accesses,
  * and to avoid unnecessary copies into the context array.
  */
+#ifdef __rtems__
+#include <machine/rtems-bsd-user-space.h>
+#include <machine/rtems-bsd-program.h>
+#include "../os/rtems/headers/rtems-bsd-fio-namespace.h"
+#endif /* __rtems__ */
 
 #include <string.h>
 #include <arpa/inet.h>
@@ -214,3 +219,6 @@ static void blk_SHA1Block(struct fio_sha1_ctx *ctx, const unsigned int *data)
 	ctx->H[3] += D;
 	ctx->H[4] += E;
 }
+#ifdef __rtems__
+#include "../os/rtems/headers/rtems-bsd-fio-sha1-data.h"
+#endif /* __rtems__ */

@@ -36,6 +36,8 @@ typedef enum {
 #include "os-android.h"
 #elif defined(__linux__)
 #include "os-linux.h"
+#elif defined (__rtems__)
+#include "os-rtems.h"
 #elif defined(__FreeBSD__)
 #include "os-freebsd.h"
 #elif defined(__OpenBSD__)
@@ -54,8 +56,6 @@ typedef enum {
 #include "os-windows.h"
 #elif defined (__DragonFly__)
 #include "os-dragonfly.h"
-#elif defined (__rtems__)
-#include "os-rtems.h"
 #else
 #error "unsupported os"
 #endif

@@ -1,3 +1,9 @@
+#ifdef __rtems__
+#include <machine/rtems-bsd-user-space.h>
+#include <machine/rtems-bsd-program.h>
+#include "../os/rtems/headers/rtems-bsd-fio-namespace.h"
+#endif /* __rtems__ */
+
 #include <math.h>
 #include <string.h>
 #include "../hash.h"
@@ -61,3 +67,6 @@ void gauss_disable_hash(struct gauss_state *gs)
 {
 	gs->disable_hash = true;
 }
+#ifdef __rtems__
+#include "../os/rtems/headers/rtems-bsd-fio-gauss-data.h"
+#endif /* __rtems__ */

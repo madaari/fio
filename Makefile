@@ -40,9 +40,9 @@ endif
 
 SOURCE :=	$(sort $(patsubst $(SRCDIR)/%,%,$(wildcard $(SRCDIR)/crc/*.c)) \
 		$(patsubst $(SRCDIR)/%,%,$(wildcard $(SRCDIR)/lib/*.c))) \
-		gettime.c ioengines.c init.c stat.c log.c time.c filesetup.c \
+		gettime.c ioengines.c init.c stat.c options.c log.c time.c filesetup.c \
 		eta.c verify.c memory.c io_u.c parse.c fio_sem.c rwlock.c \
-		pshared.c options.c client.c server.c\
+		pshared.c client.c server.c\
 		smalloc.c filehash.c profile.c debug.c engines/cpu.c \
 		engines/mmap.c engines/sync.c engines/null.c \
 		engines/ftruncate.c engines/filecreate.c \
@@ -50,7 +50,7 @@ SOURCE :=	$(sort $(patsubst $(SRCDIR)/%,%,$(wildcard $(SRCDIR)/crc/*.c)) \
 		gettime-thread.c helpers.c json.c idletime.c td_error.c \
 		profiles/tiobench.c profiles/act.c io_u_queue.c filelock.c \
 		workqueue.c rate-submit.c optgroup.c helper_thread.c \
-		steadystate.c engines/net.c
+		steadystate.c engines/net.c 
 
 
 ifdef CONFIG_LIBHDFS
@@ -197,14 +197,17 @@ ifneq (,$(findstring CYGWIN,$(CONFIG_TARGET_OS)))
 endif
 ifeq ($(CONFIG_TARGET_OS), RTEMS)
   LDFLAGS += -B $(TOOL_PATH)/arm-rtems5/beagleboneblack/lib -specs bsp_specs -qrtems -Wl,--gc-sections
-  LIBS	  += -Wl,-Bstatic -L. -lbsd -Wl,-Bdynamic -lftpd -ltelnetd -lbsd -lm -lz -ldebugger
+  LIBS	  += -Wl,-Bstatic -L. -lbsd -Wl,-Bdynamic -lbsd -lm -lz 
   CFLAGS  += -I $(TOOL_PATH)/arm-rtems5/beagleboneblack/lib/include -ffunction-sections -fdata-sections -g -mcpu=cortex-a8 -fno-strict-aliasing -ffreestanding -fno-common -w -DHAVE_RTEMS_SCORE_CPUOPTS_H=1 -DHAVE_RTEMS_H=1 -DHAVE_DLFCN_H=1 -DHAVE_RTEMS_PCI_H=1 -DHAVE_RTEMS_RTEMS_DEBUGGER_H=1
 endif
 
+FIO_OBJS = $(OBJS) fio.o 
+
+ifeq ($(CONFIG_TARGET_OS), RTEMS)
+  FIO_OBJS +=  os/rtems/rtems-init.o
+endif
 
 OBJS := $(SOURCE:.c=.o)
-
-FIO_OBJS = $(OBJS) fio-rtems.o
 
 GFIO_OBJS = $(OBJS) gfio.o graph.o tickmarks.o ghelpers.o goptions.o gerror.o \
 			gclient.o gcompat.o cairo_text_helpers.o printing.o
@@ -469,7 +472,7 @@ t/time-test: $(T_TT_OBJS)
 	$(QUIET_LINK)$(CC) $(LDFLAGS) $(CFLAGS) -o $@ $(T_TT_OBJS) $(LIBS)
 
 clean: FORCE
-	@rm -f .depend $(FIO_OBJS) $(GFIO_OBJS) $(OBJS) $(T_OBJS) $(PROGS) $(T_PROGS) $(T_TEST_PROGS) core.* core gfio FIO-VERSION-FILE *.[do] lib/*.d oslib/*.[do] crc/*.d engines/*.[do] profiles/*.[do] t/*.[do] config-host.mak config-host.h y.tab.[ch] lex.yy.c exp/*.[do] lexer.h
+	@rm -f .depend $(FIO_OBJS) $(GFIO_OBJS) $(OBJS) $(T_OBJS) $(PROGS) $(T_PROGS) $(T_TEST_PROGS) core.* core gfio FIO-VERSION-FILE *.[do] lib/*.d oslib/*.[do] crc/*.d engines/*.[do] profiles/*.[do] t/*.[do] config-host.mak config-host.h y.tab.[ch] lex.yy.c exp/*.[do] lexer.h os/rtems/*.[do]
 	@rm -rf  doc/output
 
 distclean: clean FORCE

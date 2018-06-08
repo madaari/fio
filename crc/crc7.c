@@ -4,6 +4,11 @@
  * This source code is licensed under the GNU General Public License,
  * Version 2. See the file COPYING for more details.
  */
+#ifdef __rtems__
+#include <machine/rtems-bsd-user-space.h>
+#include <machine/rtems-bsd-program.h>
+#include "../os/rtems/headers/rtems-bsd-fio-namespace.h"
+#endif /* __rtems__ */
 
 #include "crc7.h"
 
@@ -51,3 +56,6 @@ unsigned char fio_crc7(const unsigned char *buffer, unsigned int len)
 		crc = crc7_byte(crc, *buffer++);
 	return crc;
 }
+#ifdef __rtems__
+#include "../os/rtems/headers/rtems-bsd-fio-crc7-data.h"
+#endif /* __rtems__ */

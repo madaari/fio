@@ -4,6 +4,12 @@
  * IO engine that doesn't do any IO, just creates files and tracks the latency
  * of the file creation.
  */
+#ifdef __rtems__
+#include <machine/rtems-bsd-user-space.h>
+#include <machine/rtems-bsd-program.h>
+#include "../os/rtems/headers/rtems-bsd-fio-namespace.h"
+#endif /* __rtems__ */
+
 #include <stdio.h>
 #include <fcntl.h>
 #include <errno.h>
@@ -116,3 +122,6 @@ static void fio_exit fio_filecreate_unregister(void)
 {
 	unregister_ioengine(&ioengine);
 }
+#ifdef __rtems__
+#include "../os/rtems/headers/rtems-bsd-fio-filecreate-data.h"
+#endif /* __rtems__ */

@@ -1,3 +1,9 @@
+#ifdef __rtems__
+#include <machine/rtems-bsd-user-space.h>
+#include <machine/rtems-bsd-program.h>
+#include "../os/rtems/headers/rtems-bsd-fio-namespace.h"
+#endif /* __rtems__ */
+
 #include "murmur3.h"
 
 static inline uint32_t rotl32(uint32_t x, int8_t r)
@@ -66,3 +72,6 @@ uint32_t murmurhash3(const void *key, uint32_t len, uint32_t seed)
 
 	return murmur3_tail(data, nblocks, len, c1, c2, h1);
 }
+#ifdef __rtems__
+#include "../os/rtems/headers/rtems-bsd-fio-murmur3-data.h"
+#endif /* __rtems__ */

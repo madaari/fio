@@ -1,6 +1,12 @@
 /*
  * Memory helpers
  */
+#ifdef __rtems__
+#include <machine/rtems-bsd-user-space.h>
+#include <machine/rtems-bsd-program.h>
+#include "os/rtems/headers/rtems-bsd-fio-namespace.h"
+#endif /* __rtems__ */
+
 #include <fcntl.h>
 #include <unistd.h>
 #include <sys/mman.h>
@@ -360,3 +366,6 @@ void free_io_mem(struct thread_data *td)
 	td->orig_buffer = NULL;
 	td->orig_buffer_size = 0;
 }
+#ifdef __rtems__
+#include "os/rtems/headers/rtems-bsd-fio-memory-data.h"
+#endif /* __rtems__ */

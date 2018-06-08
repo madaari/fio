@@ -5,6 +5,12 @@
  * data and IO engine that does regular pread(2)/pwrite(2) to transfer data.
  *
  */
+#ifdef __rtems__
+#include <machine/rtems-bsd-user-space.h>
+#include <machine/rtems-bsd-program.h>
+#include "../os/rtems/headers/rtems-bsd-fio-namespace.h"
+#endif /* __rtems__ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -491,3 +497,6 @@ static void fio_exit fio_syncio_unregister(void)
 	unregister_ioengine(&ioengine_pvrw2);
 #endif
 }
+#ifdef __rtems__
+#include "../os/rtems/headers/rtems-bsd-fio-sync-data.h"
+#endif /* __rtems__ */

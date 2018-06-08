@@ -5,6 +5,12 @@
  *
  * Below code was granted to the public domain.
  */
+#ifdef __rtems__
+#include <machine/rtems-bsd-user-space.h>
+#include <machine/rtems-bsd-program.h>
+#include "../os/rtems/headers/rtems-bsd-fio-namespace.h"
+#endif /* __rtems__ */
+
 #include "ieee754.h"
 
 uint64_t pack754(long double f, unsigned bits, unsigned expbits)
@@ -81,3 +87,6 @@ long double unpack754(uint64_t i, unsigned bits, unsigned expbits)
 
 	return result;
 }
+#ifdef __rtems__
+#include "../os/rtems/headers/rtems-bsd-fio-ieee754-data.h"
+#endif /* __rtems__ */

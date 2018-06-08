@@ -12,6 +12,12 @@
  * any later version.
  *
  */
+#ifdef __rtems__
+#include <machine/rtems-bsd-user-space.h>
+#include <machine/rtems-bsd-program.h>
+#include "../os/rtems/headers/rtems-bsd-fio-namespace.h"
+#endif /* __rtems__ */
+
 #include <string.h>
 
 #include "../os/os.h"
@@ -170,3 +176,6 @@ void fio_sha3_final(struct fio_sha3_ctx *sctx)
 
 	memcpy(sctx->sha, sctx->st, sctx->md_len);
 }
+#ifdef __rtems__
+#include "../os/rtems/headers/rtems-bsd-fio-sha3-data.h"
+#endif /* __rtems__ */

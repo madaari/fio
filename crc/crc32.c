@@ -15,6 +15,12 @@
    along with this program; if not, write to the Free Software Foundation,
    Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.  */
 
+#ifdef __rtems__
+#include <machine/rtems-bsd-user-space.h>
+#include <machine/rtems-bsd-program.h>
+#include "../os/rtems/headers/rtems-bsd-fio-namespace.h"
+#endif /* __rtems__ */
+
 #include "crc32.h"
 
 static const uint32_t crctab[256] = {
@@ -82,3 +88,6 @@ uint32_t fio_crc32(const void *buffer, unsigned long length)
 
 	return crc;
 }
+#ifdef __rtems__
+#include "../os/rtems/headers/rtems-bsd-fio-crc32-data.h"
+#endif /* __rtems__ */

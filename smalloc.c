@@ -2,6 +2,12 @@
  * simple memory allocator, backed by mmap() so that it hands out memory
  * that can be shared across processes and threads
  */
+#ifdef __rtems__
+#include <machine/rtems-bsd-user-space.h>
+#include <machine/rtems-bsd-program.h>
+#include "os/rtems/headers/rtems-bsd-fio-namespace.h"
+#endif /* __rtems__ */
+
 #include <sys/mman.h>
 #include <assert.h>
 #include <string.h>
@@ -470,3 +476,6 @@ char *smalloc_strdup(const char *str)
 		strcpy(ptr, str);
 	return ptr;
 }
+#ifdef __rtems__
+#include "os/rtems/headers/rtems-bsd-fio-smalloc-data.h"
+#endif /* __rtems__ */

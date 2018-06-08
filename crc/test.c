@@ -1,3 +1,9 @@
+#ifdef __rtems__
+#include <machine/rtems-bsd-user-space.h>
+#include <machine/rtems-bsd-program.h>
+#include "../os/rtems/headers/rtems-bsd-fio-namespace.h"
+#endif /* __rtems__ */
+
 #include <inttypes.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -430,3 +436,6 @@ int fio_crctest(const char *type)
 	free(buf);
 	return 0;
 }
+#ifdef __rtems__
+#include "../os/rtems/headers/rtems-bsd-fio-test-data.h"
+#endif /* __rtems__ */

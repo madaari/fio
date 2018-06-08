@@ -1,3 +1,9 @@
+#ifdef __rtems__
+#include <machine/rtems-bsd-user-space.h>
+#include <machine/rtems-bsd-program.h>
+#include "../os/rtems/headers/rtems-bsd-fio-namespace.h"
+#endif /* __rtems__ */
+
 #include "hweight.h"
 
 unsigned int hweight8(uint8_t w)
@@ -31,3 +37,6 @@ unsigned int hweight64(uint64_t w)
 	return (res + (res >> 32)) & 0x00000000000000FFULL;
 #endif
 }
+#ifdef __rtems__
+#include "../os/rtems/headers/rtems-bsd-fio-hweight-data.h"
+#endif /* __rtems__ */

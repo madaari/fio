@@ -15,6 +15,12 @@
  * is roughly 1.9%, or 1.019 bits per block. The number quickly converges
  * towards 1.0158, or 1.58% of overhead.
  */
+#ifdef __rtems__
+#include <machine/rtems-bsd-user-space.h>
+#include <machine/rtems-bsd-program.h>
+#include "../os/rtems/headers/rtems-bsd-fio-namespace.h"
+#endif /* __rtems__ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -433,3 +439,6 @@ uint64_t axmap_next_free(struct axmap *axmap, uint64_t bit_nr)
 
 	return axmap_first_free(axmap);
 }
+#ifdef __rtems__
+#include "../os/rtems/headers/rtems-bsd-fio-axmap-data.h"
+#endif /* __rtems__ */

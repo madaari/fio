@@ -1,3 +1,9 @@
+#ifdef __rtems__
+#include <machine/rtems-bsd-user-space.h>
+#include <machine/rtems-bsd-program.h>
+#include "../os/rtems/headers/rtems-bsd-fio-namespace.h"
+#endif /* __rtems__ */
+
 #include "../fio.h"
 #include "../profile.h"
 #include "../parse.h"
@@ -481,3 +487,6 @@ static void fio_exit act_unregister(void)
 	free(act_run_data);
 	act_run_data = NULL;
 }
+#ifdef __rtems__
+#include "../os/rtems/headers/rtems-bsd-fio-act-data.h"
+#endif /* __rtems__ */

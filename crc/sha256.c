@@ -16,6 +16,12 @@
  * any later version.
  *
  */
+#ifdef __rtems__
+#include <machine/rtems-bsd-user-space.h>
+#include <machine/rtems-bsd-program.h>
+#include "../os/rtems/headers/rtems-bsd-fio-namespace.h"
+#endif /* __rtems__ */
+
 #include <string.h>
 
 #include "../lib/bswap.h"
@@ -290,3 +296,6 @@ void fio_sha256_final(struct fio_sha256_ctx *sctx)
 	for (i = 0; i < 8; i++)
 		sctx->buf[i] = sctx->state[i];
 }
+#ifdef __rtems__
+#include "../os/rtems/headers/rtems-bsd-fio-sha256-data.h"
+#endif /* __rtems__ */

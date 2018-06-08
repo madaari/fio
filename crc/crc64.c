@@ -1,3 +1,9 @@
+#ifdef __rtems__
+#include <machine/rtems-bsd-user-space.h>
+#include <machine/rtems-bsd-program.h>
+#include "../os/rtems/headers/rtems-bsd-fio-namespace.h"
+#endif /* __rtems__ */
+
 #include "crc64.h"
 
 /*
@@ -101,4 +107,6 @@ unsigned long long fio_crc64(const unsigned char *buffer, unsigned long length)
 
 	return crc;
 }
-
+#ifdef __rtems__
+#include "../os/rtems/headers/rtems-bsd-fio-crc64-data.h"
+#endif /* __rtems__ */

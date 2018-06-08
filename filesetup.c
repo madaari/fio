@@ -1,3 +1,9 @@
+#ifdef __rtems__
+#include <machine/rtems-bsd-user-space.h>
+#include <machine/rtems-bsd-program.h>
+#include "os/rtems/headers/rtems-bsd-fio-namespace.h"
+#endif /* __rtems__ */
+
 #include <unistd.h>
 #include <fcntl.h>
 #include <string.h>
@@ -1348,19 +1354,22 @@ void close_and_free_files(struct thread_data *td)
 			td_io_unlink_file(td, f);
 		}
 
-		if (use_free)
+		if (use_free){
 			free(f->file_name);
-		else
+		}else {
 			sfree(f->file_name);
+		}
+
 		f->file_name = NULL;
 		if (fio_file_axmap(f)) {
 			axmap_free(f->io_axmap);
 			f->io_axmap = NULL;
 		}
-		if (use_free)
+		if (use_free){
 			free(f);
-		else
+		}else{
 			sfree(f);
+		}
 	}
 
 	td->o.filename = NULL;
@@ -1914,3 +1923,7 @@ int fio_set_directio(struct thread_data *td, struct fio_file *f)
 	return -1;
 #endif
 }
+
+#ifdef __rtems__
+#include "os/rtems/headers/rtems-bsd-fio-filesetup-data.h"
+#endif /* __rtems__ */

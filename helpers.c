@@ -1,3 +1,9 @@
+#ifdef __rtems__
+#include <machine/rtems-bsd-user-space.h>
+#include <machine/rtems-bsd-program.h>
+#include "os/rtems/headers/rtems-bsd-fio-namespace.h"
+#endif /* __rtems__ */
+
 #include <errno.h>
 
 #include "helpers.h"
@@ -31,3 +37,6 @@ int posix_fadvise(int fd, off_t offset, off_t len, int advice)
 	return 0;
 }
 #endif
+#ifdef __rtems__
+#include "os/rtems/headers/rtems-bsd-fio-helpers-data.h"
+#endif /* __rtems__ */

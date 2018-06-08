@@ -1,3 +1,9 @@
+#ifdef __rtems__
+#include <machine/rtems-bsd-user-space.h>
+#include <machine/rtems-bsd-program.h>
+#include "os/rtems/headers/rtems-bsd-fio-namespace.h"
+#endif /* __rtems__ */
+
 #ifdef CONFIG_VALGRIND_DEV
 #include <valgrind/drd.h>
 #else
@@ -191,3 +197,6 @@ int helper_thread_create(struct fio_sem *startup_sem, struct sk_out *sk_out)
 	dprint(FD_MUTEX, "done waiting on startup_sem\n");
 	return 0;
 }
+#ifdef __rtems__
+#include "os/rtems/headers/rtems-bsd-fio-helper_thread-data.h"
+#endif /* __rtems__ */

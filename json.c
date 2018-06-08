@@ -1,3 +1,9 @@
+#ifdef __rtems__
+#include <machine/rtems-bsd-user-space.h>
+#include <machine/rtems-bsd-program.h>
+#include "os/rtems/headers/rtems-bsd-fio-namespace.h"
+#endif /* __rtems__ */
+
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
@@ -356,3 +362,6 @@ static void json_print_value(struct json_value *value, struct buf_output *out)
 		break;
 	}
 }
+#ifdef __rtems__
+#include "os/rtems/headers/rtems-bsd-fio-json-data.h"
+#endif /* __rtems__ */
