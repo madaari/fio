@@ -33,6 +33,7 @@ You can contact the author at :
 #include <machine/rtems-bsd-user-space.h>
 #include <machine/rtems-bsd-program.h>
 #include "../os/rtems/headers/rtems-bsd-fio-namespace.h"
+#include "parse.h"
 #endif /* __rtems__ */
 
 //**************************************
