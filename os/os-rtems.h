@@ -22,6 +22,8 @@
 #define CONFIG_NO_SHM
 #define CONFIG_HAVE_MKDIR_TWO
 #define SA_RESTART	0
+#define __need_getopt_newlib
+#define CONFIG_HAVE_VASPRINTF
 
 static inline int blockdev_invalidate_cache(struct fio_file *f)
 {

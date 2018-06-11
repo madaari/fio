@@ -102,7 +102,9 @@ endif
 ifdef CONFIG_RBD
   SOURCE += engines/rbd.c
 endif
+ifneq ($(CONFIG_TARGET_OS), RTEMS)
 SOURCE += oslib/asprintf.c
+endif
 ifndef CONFIG_STRSEP
   SOURCE += oslib/strsep.c
 endif
@@ -198,7 +200,7 @@ endif
 ifeq ($(CONFIG_TARGET_OS), RTEMS)
   LDFLAGS += -B $(TOOL_PATH)/arm-rtems5/beagleboneblack/lib -specs bsp_specs -qrtems -Wl,--gc-sections
   LIBS	  += -Wl,-Bstatic -L. -lbsd -Wl,-Bdynamic -lbsd -lm -lz 
-  CFLAGS  += -I $(TOOL_PATH)/arm-rtems5/beagleboneblack/lib/include -ffunction-sections -fdata-sections -g -mcpu=cortex-a8 -fno-strict-aliasing -ffreestanding -fno-common -w -DHAVE_RTEMS_SCORE_CPUOPTS_H=1 -DHAVE_RTEMS_H=1 -DHAVE_DLFCN_H=1 -DHAVE_RTEMS_PCI_H=1 -DHAVE_RTEMS_RTEMS_DEBUGGER_H=1
+  CFLAGS  += -I $(TOOL_PATH)/arm-rtems5/beagleboneblack/lib/include -ffunction-sections -fdata-sections -g -mcpu=cortex-a8 -fno-strict-aliasing -ffreestanding -fno-common -w -DHAVE_RTEMS_SCORE_CPUOPTS_H=1 -DHAVE_RTEMS_H=1 -DHAVE_DLFCN_H=1 -DHAVE_RTEMS_PCI_H=1 -DHAVE_RTEMS_RTEMS_DEBUGGER_H=1 -g
 endif
 
 FIO_OBJS = $(OBJS) fio.o 
