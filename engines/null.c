@@ -160,12 +160,22 @@ static struct ioengine_ops ioengine = {
 	.flags		= FIO_DISKLESSIO | FIO_FAKEIO,
 };
 
-static void fio_init fio_null_register(void)
+#ifdef __rtems__
+void
+#else
+static void fio_init
+#endif
+fio_null_register(void)
 {
 	register_ioengine(&ioengine);
 }
 
-static void fio_exit fio_null_unregister(void)
+#ifdef __rtems__
+void
+#else
+static void fio_exit
+#endif
+fio_null_unregister(void)
 {
 	unregister_ioengine(&ioengine);
 }

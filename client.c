@@ -92,7 +92,12 @@ static void fio_client_remove_hash(struct fio_client *client)
 		flist_del_init(&client->hash_list);
 }
 
-static void fio_init fio_client_hash_init(void)
+#ifdef __rtems__
+void
+#else
+static void fio_init
+#endif
+fio_client_hash_init(void)
 {
 	int i;
 

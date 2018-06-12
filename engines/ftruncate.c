@@ -46,13 +46,21 @@ static struct ioengine_ops ioengine = {
 	.get_file_size	= generic_get_file_size,
 	.flags		= FIO_SYNCIO | FIO_FAKEIO
 };
-
+#ifdef __rtems__
+void fio_syncio_register_ft(void)
+#else
 static void fio_init fio_syncio_register(void)
+#endif
 {
 	register_ioengine(&ioengine);
 }
 
-static void fio_exit fio_syncio_unregister(void)
+#ifdef __rtems__
+void
+#else
+static void fio_exit
+#endif
+fio_syncio_unregister(void)
 {
 	unregister_ioengine(&ioengine);
 }

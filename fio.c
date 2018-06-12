@@ -70,12 +70,63 @@ done_key:
 	fio_server_destroy_sk_key();
 done:
 	deinitialize_fio();
+    puts("calling destructors\n");
+    fio_syncio_unregister();
+    tiobench_unregister();
+    fio_cpuio_unregister();
+    fio_filecreate_unregister();
+    fio_mmapio_unregister();
+    fio_null_unregister();
+    act_unregister();
+    fio_netio_unregister();
 	return ret;
 }
 
 #ifdef __rtems__
 #include "os/rtems/headers/rtems-bsd-fio-fio-data.h"
-#endif /* __rtems__ */
+
+void act_register(void);
+void tiobench_register(void);
+void fio_syncio_register(void);
+void fio_cpuio_register(void);
+void fio_filecreate_register(void);
+void fio_gf_register(void);
+void fio_mmapio_register(void);
+void fio_null_register(void);
+void fio_netio_register(void);
+void prio_tree_init(void);
+void fio_syncio_register_ft(void);
+void fio_client_hash_init(void);
+void fio_syncio_unregister(void);
+void tiobench_unregister(void);
+void fio_cpuio_unregister(void);
+void fio_filecreate_unregister(void);
+void fio_mmapio_unregister(void);
+void fio_null_unregister(void);
+void act_unregister(void);
+void fio_netio_unregister(void);
+
+static int
+mainwrapper(int argc, char *argv[])
+{
+	act_register();
+	tiobench_register();
+	fio_syncio_register();
+	fio_cpuio_register();
+	fio_filecreate_register();
+#ifdef CONFIG_GFAPI
+	fio_gf_register();
+#endif
+	fio_mmapio_register();
+	fio_null_register();
+	fio_netio_register();
+	prio_tree_init();
+	fio_syncio_register_ft();
+	fio_client_hash_init();
+	printf("Constructors called\n");
+
+	return main(argc, argv, (char *)NULL);
+}
 
 RTEMS_LINKER_RWSET(bsd_prog_fio, char);
 
@@ -89,9 +140,12 @@ rtems_bsd_command_fio(int argc, char *argv[])
     data_size = RTEMS_LINKER_SET_SIZE(bsd_prog_fio);
 
     rtems_bsd_program_lock();
+    
     exit_code = rtems_bsd_program_call_main_with_data_restore("fio",
-        main, argc, argv, data_begin, data_size);
-    rtems_bsd_program_unlock();
-
+        mainwrapper, argc, argv, data_begin, data_size);
+        
+     rtems_bsd_program_unlock();
+            
     return exit_code;
 }
+#endif /* __rtems__ */

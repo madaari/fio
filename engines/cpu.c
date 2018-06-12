@@ -118,12 +118,22 @@ static struct ioengine_ops ioengine = {
 	.option_struct_size	= sizeof(struct cpu_options),
 };
 
-static void fio_init fio_cpuio_register(void)
+#ifdef __rtems__
+void
+#else
+static void fio_init
+#endif
+fio_cpuio_register(void)
 {
 	register_ioengine(&ioengine);
 }
 
-static void fio_exit fio_cpuio_unregister(void)
+#ifdef __rtems__
+void
+#else
+static void fio_exit
+#endif
+fio_cpuio_unregister(void)
 {
 	unregister_ioengine(&ioengine);
 }

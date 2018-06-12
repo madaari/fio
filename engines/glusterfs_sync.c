@@ -88,12 +88,22 @@ static struct ioengine_ops ioengine = {
 	.flags = FIO_SYNCIO | FIO_DISKLESSIO,
 };
 
-static void fio_init fio_gf_register(void)
+#ifdef __rtems__
+void
+#else
+static void fio_init
+#endif
+fio_gf_register(void)
 {
 	register_ioengine(&ioengine);
 }
 
-static void fio_exit fio_gf_unregister(void)
+#ifdef __rtems__
+void
+#else
+static void fio_exit
+#endif
+fio_gf_unregister(void)
 {
 	unregister_ioengine(&ioengine);
 }

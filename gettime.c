@@ -100,7 +100,12 @@ static void gtod_log_caller(void *caller)
 		inc_caller(caller);
 }
 
-static void fio_exit fio_dump_gtod(void)
+#ifdef __rtems__
+void
+#else
+static void fio_exit
+#endif
+fio_dump_gtod(void)
 {
 	unsigned long total_calls = 0;
 	int i;
@@ -121,7 +126,12 @@ static void fio_exit fio_dump_gtod(void)
 	printf("Total %lu gettimeofday\n", total_calls);
 }
 
-static void fio_init gtod_init(void)
+#ifdef __rtems__
+void
+#else
+static void fio_init
+#endif
+gtod_init(void)
 {
 	int i;
 
