@@ -101,3 +101,4 @@ unsigned long long fio_crc64(const unsigned char *buffer, unsigned long length)
 
 	return crc;
 }
+

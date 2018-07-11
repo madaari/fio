@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -89,9 +88,9 @@ static void fio_client_remove_hash(struct fio_client *client)
 
 #ifdef __rtems__
 void
-#else
+#else /* __rtems__ */
 static void fio_init
-#endif
+#endif /* __rtems__ */
 fio_client_hash_init(void)
 {
 	int i;

@@ -1,4 +1,3 @@
-
 #include <unistd.h>
 #include <fcntl.h>
 #include <string.h>
@@ -1349,22 +1348,20 @@ void close_and_free_files(struct thread_data *td)
 			td_io_unlink_file(td, f);
 		}
 
-		if (use_free){
+		if (use_free)
 			free(f->file_name);
-		}else {
+		else
 			sfree(f->file_name);
-		}
 
 		f->file_name = NULL;
 		if (fio_file_axmap(f)) {
 			axmap_free(f->io_axmap);
 			f->io_axmap = NULL;
 		}
-		if (use_free){
+		if (use_free)
 			free(f);
-		}else{
+		else
 			sfree(f);
-		}
 	}
 
 	td->o.filename = NULL;

@@ -30,7 +30,6 @@
  * any later version.
  *
  */
-
 #include "crc32c.h"
 
 /*

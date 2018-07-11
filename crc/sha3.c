@@ -12,7 +12,6 @@
  * any later version.
  *
  */
-
 #include <string.h>
 
 #include "../os/os.h"

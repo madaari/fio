@@ -1,4 +1,3 @@
-
 #include "../fio.h"
 #include "../profile.h"
 #include "../parse.h"
@@ -464,13 +463,12 @@ static struct profile_ops act_profile = {
 
 #ifdef __rtems__
 void
-#else
+#else /* __rtems__ */
 static void fio_init
-#endif
+#endif /* __rtems__ */
 act_register(void)
 {
 	act_run_data = calloc(1, sizeof(*act_run_data));
-
 	act_run_data->sem = fio_sem_init(FIO_SEM_UNLOCKED);
 
 	if (register_profile(&act_profile))
@@ -479,9 +477,9 @@ act_register(void)
 
 #ifdef __rtems__
 void
-#else
+#else /* __rtems__ */
 static void fio_exit
-#endif
+#endif /* __rtems__ */
 act_unregister(void)
 {
 	while (org_idx && org_idx < opt_idx)

@@ -3,7 +3,6 @@
  * just scans the filename for extents of the given size, checksums them,
  * and orders them up.
  */
-
 #include <fcntl.h>
 #include <inttypes.h>
 #include <stdio.h>

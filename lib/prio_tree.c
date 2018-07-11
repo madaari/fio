@@ -55,9 +55,9 @@ static unsigned long index_bits_to_maxindex[BITS_PER_LONG];
 
 #ifdef __rtems__
 void
-#else
+#else /* __rtems__ */
 static void fio_init
-#endif
+#endif /* __rtems__ */
 prio_tree_init(void)
 {
 	unsigned int i;

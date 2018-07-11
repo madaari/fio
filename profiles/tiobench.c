@@ -124,9 +124,9 @@ static struct profile_ops tiobench_profile = {
 
 #ifdef __rtems__
 void
-#else
+#else /* __rtems__ */
 static void fio_init
-#endif
+#endif /* __rtems__ */
 tiobench_register(void)
 {
 	if (register_profile(&tiobench_profile))
@@ -134,9 +134,9 @@ tiobench_register(void)
 }
 #ifdef __rtems__
 void
-#else
+#else /* __rtems__ */
 static void fio_exit
-#endif
+#endif /* __rtems__ */
 tiobench_unregister(void)
 {
 	unregister_profile(&tiobench_profile);

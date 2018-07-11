@@ -15,7 +15,6 @@
  * is roughly 1.9%, or 1.019 bits per block. The number quickly converges
  * towards 1.0158, or 1.58% of overhead.
  */
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

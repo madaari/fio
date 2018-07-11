@@ -12,7 +12,6 @@
  * to be given, if not given defaults are used.
  *
  */
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

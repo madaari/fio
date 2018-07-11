@@ -16,7 +16,6 @@
  * any later version.
  *
  */
-
 #include <string.h>
 
 #include "../lib/bswap.h"

@@ -5,7 +5,6 @@
  * data and IO engine that does regular pread(2)/pwrite(2) to transfer data.
  *
  */
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -469,9 +468,9 @@ static struct ioengine_ops ioengine_pvrw2 = {
 
 #ifdef __rtems__
 void
-#else
+#else /* __rtems__ */
 static void fio_init
-#endif
+#endif /* __rtems__ */
 fio_syncio_register(void)
 {
 	register_ioengine(&ioengine_rw);
@@ -487,9 +486,9 @@ fio_syncio_register(void)
 
 #ifdef __rtems__
 void
-#else
+#else /* __rtems__ */
 static void fio_exit
-#endif
+#endif /* __rtems__ */
 fio_syncio_unregister(void)
 {
 	unregister_ioengine(&ioengine_rw);

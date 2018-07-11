@@ -2,7 +2,6 @@
  * Code related to writing an iolog of what a thread is doing, and to
  * later read that back and replay
  */
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>

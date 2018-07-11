@@ -49,7 +49,6 @@
 #define CONFIG_NO_SHM
 #define CONFIG_HAVE_MKDIR_TWO
 #define SA_RESTART	0
-#define CONFIG_HAVE_VASPRINTF
 #define __need_getopt_newlib
 
 static inline int blockdev_invalidate_cache(struct fio_file *f)
@@ -60,12 +59,13 @@ static inline int blockdev_invalidate_cache(struct fio_file *f)
 static inline int blockdev_size(struct fio_file *f, unsigned long long *bytes)
 {
 	errno = ENOSYS;
-	return errno;
+	return 0;
 }
 
 static inline unsigned long long os_phys_mem(void)
 {
-	return ENOSYS;
+    errno = ENOSYS;
+	return 0;
 }
 
 #endif

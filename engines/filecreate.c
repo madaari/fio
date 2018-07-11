@@ -4,7 +4,6 @@
  * IO engine that doesn't do any IO, just creates files and tracks the latency
  * of the file creation.
  */
-
 #include <stdio.h>
 #include <fcntl.h>
 #include <errno.h>
@@ -109,9 +108,9 @@ static struct ioengine_ops ioengine = {
 };
 #ifdef __rtems__
 void
-#else
+#else /* __rtems__ */
 static void fio_init
-#endif
+#endif /* __rtems__ */
 fio_filecreate_register(void)
 {
 	register_ioengine(&ioengine);
@@ -119,9 +118,9 @@ fio_filecreate_register(void)
 
 #ifdef __rtems__
 void
-#else
+#else /* __rtems__ */
 static void fio_exit
-#endif
+#endif /* __rtems__ */
 fio_filecreate_unregister(void)
 {
 	unregister_ioengine(&ioengine);

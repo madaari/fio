@@ -30,6 +30,7 @@ You can contact the author at :
 - xxHash source repository : http://code.google.com/p/xxhash/
 */
 
+
 //**************************************
 // Tuning parameters
 //**************************************

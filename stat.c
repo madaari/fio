@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <string.h>
 #include <sys/time.h>
@@ -39,16 +38,16 @@ void update_rusage_stat(struct thread_data *td)
 					&td->ru_end.ru_utime);
 	ts->sys_time += mtime_since_tv(&td->ru_start.ru_stime,
 					&td->ru_end.ru_stime);
-	#ifndef __rtems__ /* Virtual Memory not supported on RTEMS */
+#ifndef __rtems__ /* Virtual Memory not supported on RTEMS */
 	ts->ctx += td->ru_end.ru_nvcsw + td->ru_end.ru_nivcsw
 			- (td->ru_start.ru_nvcsw + td->ru_start.ru_nivcsw);
 	ts->minf += td->ru_end.ru_minflt - td->ru_start.ru_minflt;
 	ts->majf += td->ru_end.ru_majflt - td->ru_start.ru_majflt;
-	#else
+#else /* __rtems__ */
 	ts->ctx  = ((uint64_t) -1);
 	ts->minf = ((uint64_t) -1);
 	ts->majf = ((uint64_t) -1);
-	#endif /* RTEMS */
+#endif /* __rtems__ */
 
 	memcpy(&td->ru_start, &td->ru_end, sizeof(td->ru_end));
 }
@@ -294,11 +293,14 @@ void show_group_stats(struct group_run_stats *rs, struct buf_output *out)
 	const char *str[] = { "   READ", "  WRITE" , "   TRIM"};
 	int i;
 
-	log_buf(out, "\nRun status group %lu (all jobs):\n", rs->groupid);
+	log_buf(out, "\nRun status group %d (all jobs):\n", rs->groupid);
+
 	for (i = 0; i < DDIR_RWDIR_CNT; i++) {
 		const int i2p = is_power_of_2(rs->kb_base);
+
 		if (!rs->max_run[i])
 			continue;
+
 		io = num2str(rs->iobytes[i], rs->sig_figs, 1, i2p, N2S_BYTE);
 		ioalt = num2str(rs->iobytes[i], rs->sig_figs, 1, !i2p, N2S_BYTE);
 		agg = num2str(rs->agg[i], rs->sig_figs, 1, i2p, rs->unit_base);
@@ -723,7 +725,7 @@ static void show_block_infos(int nr_block_infos, uint32_t *block_infos,
 		uint32_t block_info = percentiles[i];
 #define LINE_LENGTH	75
 		char str[LINE_LENGTH];
-		int strln = snprintf(str, LINE_LENGTH, " %3.2fth=%lu%c",
+		int strln = snprintf(str, LINE_LENGTH, " %3.2fth=%u%c",
 				     plist[i].u.f, block_info,
 				     i == len - 1 ? '\n' : ',');
 		assert(strln < LINE_LENGTH);
@@ -793,11 +795,11 @@ static void show_thread_status_normal(struct thread_stat *ts,
 	os_ctime_r((const time_t *) &time_p, time_buf, sizeof(time_buf));
 
 	if (!ts->error) {
-		log_buf(out, "%s: (groupid=%lu, jobs=%lu): err=%2lu: pid=%d: %s",
+		log_buf(out, "%s: (groupid=%d, jobs=%d): err=%2d: pid=%d: %s",
 					ts->name, ts->groupid, ts->members,
 					ts->error, (int) ts->pid, time_buf);
 	} else {
-		log_buf(out, "%s: (groupid=%lu, jobs=%lu): err=%2lu (%s): pid=%d: %s",
+		log_buf(out, "%s: (groupid=%d, jobs=%d): err=%2d (%s): pid=%d: %s",
 					ts->name, ts->groupid, ts->members,
 					ts->error, ts->verror, (int) ts->pid,
 					time_buf);
@@ -868,13 +870,13 @@ static void show_thread_status_normal(struct thread_stat *ts,
 					(unsigned long long) ts->drop_io_u[1],
 					(unsigned long long) ts->drop_io_u[2]);
 	if (ts->continue_on_error) {
-		log_buf(out, "     errors    : total=%llu, first_error=%lu/<%s>\n",
+		log_buf(out, "     errors    : total=%llu, first_error=%d/<%s>\n",
 					(unsigned long long)ts->total_err_count,
 					ts->first_error,
 					strerror(ts->first_error));
 	}
 	if (ts->latency_depth) {
-		log_buf(out, "     latency   : target=%llu, window=%llu, percentile=%.2f%%, depth=%lu\n",
+		log_buf(out, "     latency   : target=%llu, window=%llu, percentile=%.2f%%, depth=%u\n",
 					(unsigned long long)ts->latency_target,
 					(unsigned long long)ts->latency_window,
 					ts->latency_percentile.u.f,
@@ -1162,9 +1164,9 @@ static void show_thread_status_terse_all(struct thread_stat *ts,
 
 	/* General Info */
 	if (ver == 2)
-		log_buf(out, "2;%s;%lu;%lu", ts->name, ts->groupid, ts->error);
+		log_buf(out, "2;%s;%d;%d", ts->name, ts->groupid, ts->error);
 	else
-		log_buf(out, "%d;%s;%s;%lu;%lu", ver, fio_version_string,
+		log_buf(out, "%d;%s;%s;%d;%d", ver, fio_version_string,
 			ts->name, ts->groupid, ts->error);
 
 	/* Log Read Status */
@@ -1214,7 +1216,7 @@ static void show_thread_status_terse_all(struct thread_stat *ts,
 
 	/* Additional output if continue_on_error set - default off*/
 	if (ts->continue_on_error)
-		log_buf(out, ";%llu;%lu", (unsigned long long) ts->total_err_count, ts->first_error);
+		log_buf(out, ";%llu;%d", (unsigned long long) ts->total_err_count, ts->first_error);
 	if (ver == 2)
 		log_buf(out, "\n");
 
@@ -1753,11 +1755,11 @@ void __show_run_stats(void)
 			ts->unified_rw_rep = td->o.unified_rw_rep;
 		} else if (ts->kb_base != td->o.kb_base && !kb_base_warned) {
 			log_info("fio: kb_base differs for jobs in group, using"
-				 " %lu as the base\n", ts->kb_base);
+				 " %u as the base\n", ts->kb_base);
 			kb_base_warned = true;
 		} else if (ts->unit_base != td->o.unit_base && !unit_base_warned) {
 			log_info("fio: unit_base differs for jobs in group, using"
-				 " %lu as the base\n", ts->unit_base);
+				 " %u as the base\n", ts->unit_base);
 			unit_base_warned = true;
 		}
 
@@ -1924,14 +1926,13 @@ void __show_run_stats(void)
 			show_group_stats(rs, &output[__FIO_OUTPUT_NORMAL]);
 	}
 
-	if (is_backend){
-		fio_server_send_du();}
-		
+	if (is_backend)
+		fio_server_send_du();
 	else if (output_format & FIO_OUTPUT_NORMAL) {
 		show_disk_util(0, NULL, &output[__FIO_OUTPUT_NORMAL]);
 		show_idle_prof_stats(FIO_OUTPUT_NORMAL, NULL, &output[__FIO_OUTPUT_NORMAL]);
 	}
-    
+
 	for (i = 0; i < FIO_OUTPUT_NR; i++) {
 		struct buf_output *out = &output[i];
 

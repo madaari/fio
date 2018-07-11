@@ -15,11 +15,6 @@ void fio_null_unregister(void);
 void act_unregister(void);
 void fio_syncio_unregister_ft(void);
 
-int nice(int incr)
-{
-    return 0;
-}
-
 static int
 mainwrapper(int argc, char *argv[])
 {

@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -1093,11 +1092,10 @@ static int fio_send_cmd_ext_pdu(int sk, uint16_t opcode, const void *buf,
 
 static void finish_entry(struct sk_entry *entry)
 {
-	if (entry->flags & SK_F_FREE){
+	if (entry->flags & SK_F_FREE)
 		free(entry->buf);
-	}else if (entry->flags & SK_F_COPY){
+	else if (entry->flags & SK_F_COPY)
 		sfree(entry->buf);
-	}
 
 	sfree(entry);
 }

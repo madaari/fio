@@ -36,6 +36,7 @@ char *num2str(uint64_t num, int maxlen, int base, int pow2, enum n2s_unit units)
 	int post_index, carry = 0;
 	char tmp[32], fmt[32];
 	char *buf;
+
 	compiletime_assert(sizeof(sistr) == sizeof(iecstr), "unit prefix arrays must be identical sizes");
 	assert(units < ARRAY_SIZE(unitstr));
 
@@ -67,6 +68,7 @@ char *num2str(uint64_t num, int maxlen, int base, int pow2, enum n2s_unit units)
 		num *= 8;
 		break;
 	}
+
 	/*
 	 * Divide by K/Ki until string length of num <= maxlen.
 	 */
@@ -81,6 +83,7 @@ char *num2str(uint64_t num, int maxlen, int base, int pow2, enum n2s_unit units)
 		carry = modulo >= thousand[!!pow2] / 2;
 		post_index++;
 	}
+
 	/*
 	 * If no modulo, then we're done.
 	 */
@@ -93,6 +96,7 @@ done:
 			unitprefix[post_index], unitstr[units]);
 		return buf;
 	}
+
 	/*
 	 * If no room for decimals, then we're done.
 	 */
@@ -110,6 +114,7 @@ done:
 	assert(modulo < thousand[!!pow2]);
 	sprintf(fmt, "%%.%df", (int)(maxlen - strlen(tmp) - 1));
 	sprintf(tmp, fmt, (double)modulo / (double)thousand[!!pow2]);
+
 	sprintf(buf, "%llu.%s%s%s", (unsigned long long) num, &tmp[2],
 			unitprefix[post_index], unitstr[units]);
 	return buf;

@@ -1,7 +1,6 @@
 /*
  * Shamelessly lifted from the 2.6 kernel (crypto/md5.c)
  */
-
 #include <string.h>
 #include "md5.h"
 

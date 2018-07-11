@@ -96,9 +96,9 @@ static void gtod_log_caller(void *caller)
 
 #ifdef __rtems__
 void
-#else
+#else /* __rtems__ */
 static void fio_exit
-#endif
+#endif /* __rtems__ */
 fio_dump_gtod(void)
 {
 	unsigned long total_calls = 0;
@@ -122,9 +122,9 @@ fio_dump_gtod(void)
 
 #ifdef __rtems__
 void
-#else
+#else /* __rtems__ */
 static void fio_init
-#endif
+#endif /* __rtems__ */
 gtod_init(void)
 {
 	int i;

@@ -6,7 +6,6 @@
  * DDIR_WRITE does ftruncate
  *
  */
-
 #include <errno.h>
 #include <unistd.h>
 
@@ -41,20 +40,21 @@ static struct ioengine_ops ioengine = {
 	.get_file_size	= generic_get_file_size,
 	.flags		= FIO_SYNCIO | FIO_FAKEIO
 };
+
 #ifdef __rtems__
 void fio_syncio_register_ft(void)
-#else
+#else /* __rtems__ */
 static void fio_init fio_syncio_register(void)
-#endif
+#endif /* __rtems__ */
 {
 	register_ioengine(&ioengine);
 }
 
 #ifdef __rtems__
 void fio_syncio_unregister_ft(void)
-#else
+#else /* __rtems__ */
 static void fio_exit fio_syncio_unregister(void)
-#endif
+#endif /* __rtems__ */
 {
 	unregister_ioengine(&ioengine);
 }

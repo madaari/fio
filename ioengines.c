@@ -9,7 +9,6 @@
  * generic io engine that could be used for other projects.
  *
  */
-
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
@@ -106,6 +105,7 @@ static struct ioengine_ops *dlopen_ioengine(struct thread_data *td,
 	 */
 	if (!ops) {
 		get_ioengine_t get_ioengine = dlsym(dlhandle, "get_ioengine");
+
 		if (get_ioengine)
 			get_ioengine(&ops);
 	}
@@ -200,7 +200,7 @@ void free_ioengine(struct thread_data *td)
 	}
 
 	td->io_ops = NULL;
-#endif
+#endif /* __rtems__ */
 }
 
 void close_ioengine(struct thread_data *td)

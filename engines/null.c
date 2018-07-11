@@ -13,7 +13,6 @@
  * LD_LIBRARY_PATH=./engines ./fio examples/cpp_null.fio
  *
  */
-
 #include <stdlib.h>
 #include <assert.h>
 
@@ -157,9 +156,9 @@ static struct ioengine_ops ioengine = {
 
 #ifdef __rtems__
 void
-#else
+#else /* __rtems__ */
 static void fio_init
-#endif
+#endif /* __rtems__ */
 fio_null_register(void)
 {
 	register_ioengine(&ioengine);
@@ -167,9 +166,9 @@ fio_null_register(void)
 
 #ifdef __rtems__
 void
-#else
+#else /* __rtems__ */
 static void fio_exit
-#endif
+#endif /* __rtems__ */
 fio_null_unregister(void)
 {
 	unregister_ioengine(&ioengine);

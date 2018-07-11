@@ -5,7 +5,6 @@
  * a memory mapped region of the file.
  *
  */
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
@@ -280,9 +279,9 @@ static struct ioengine_ops ioengine = {
 
 #ifdef __rtems__
 void
-#else
+#else /* __rtems__ */
 static void fio_init
-#endif
+#endif /* __rtems__ */
 fio_mmapio_register(void)
 {
 	register_ioengine(&ioengine);
@@ -290,9 +289,9 @@ fio_mmapio_register(void)
 
 #ifdef __rtems__
 void
-#else
+#else /* __rtems__ */
 static void fio_exit
-#endif
+#endif /* __rtems__ */
 fio_mmapio_unregister(void)
 {
 	unregister_ioengine(&ioengine);

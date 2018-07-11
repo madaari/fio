@@ -40,17 +40,17 @@ endif
 
 SOURCE :=	$(sort $(patsubst $(SRCDIR)/%,%,$(wildcard $(SRCDIR)/crc/*.c)) \
 		$(patsubst $(SRCDIR)/%,%,$(wildcard $(SRCDIR)/lib/*.c))) \
-		gettime.c ioengines.c init.c stat.c options.c log.c time.c filesetup.c \
+		gettime.c ioengines.c init.c stat.c log.c time.c filesetup.c \
 		eta.c verify.c memory.c io_u.c parse.c fio_sem.c rwlock.c \
-		pshared.c client.c server.c\
+		pshared.c options.c \
 		smalloc.c filehash.c profile.c debug.c engines/cpu.c \
-		engines/mmap.c engines/sync.c engines/null.c \
+		engines/mmap.c engines/sync.c engines/null.c engines/net.c \
 		engines/ftruncate.c engines/filecreate.c \
-		iolog.c backend.c libfio.c flow.c cconv.c \
+		client.c server.c iolog.c backend.c libfio.c flow.c cconv.c \
 		gettime-thread.c helpers.c json.c idletime.c td_error.c \
 		profiles/tiobench.c profiles/act.c io_u_queue.c filelock.c \
 		workqueue.c rate-submit.c optgroup.c helper_thread.c \
-		steadystate.c engines/net.c 
+		steadystate.c 
 
 
 ifdef CONFIG_LIBHDFS
@@ -102,9 +102,7 @@ endif
 ifdef CONFIG_RBD
   SOURCE += engines/rbd.c
 endif
-ifneq ($(CONFIG_TARGET_OS), RTEMS)
 SOURCE += oslib/asprintf.c
-endif
 ifndef CONFIG_STRSEP
   SOURCE += oslib/strsep.c
 endif
@@ -199,8 +197,8 @@ ifneq (,$(findstring CYGWIN,$(CONFIG_TARGET_OS)))
 endif
 ifeq ($(CONFIG_TARGET_OS), RTEMS)
   LDFLAGS += -B $(TOOL_PATH)/arm-rtems5/beagleboneblack/lib -specs bsp_specs -qrtems -Wl,--gc-sections
-  LIBS	  += -Wl,-Bstatic -L. -lbsd -Wl,-Bdynamic -lbsd -lm -lz 
-  CFLAGS  += -I $(TOOL_PATH)/arm-rtems5/beagleboneblack/lib/include -ffunction-sections -fdata-sections -g -mcpu=cortex-a8 -fno-strict-aliasing -ffreestanding -fno-common -w -DHAVE_RTEMS_SCORE_CPUOPTS_H=1 -DHAVE_RTEMS_H=1 -DHAVE_DLFCN_H=1 -DHAVE_RTEMS_PCI_H=1 -DHAVE_RTEMS_RTEMS_DEBUGGER_H=1 -g
+  LIBS	  += -Wl,-Bstatic -L. -lbsd -Wl,-Bdynamic -lm -lz
+  CFLAGS  += -I $(TOOL_PATH)/arm-rtems5/beagleboneblack/lib/include -ffunction-sections -fdata-sections -g -mcpu=cortex-a8 -fno-strict-aliasing -ffreestanding -fno-common -w -DHAVE_RTEMS_SCORE_CPUOPTS_H=1 -DHAVE_RTEMS_H=1 -DHAVE_DLFCN_H=1 -DHAVE_RTEMS_PCI_H=1 -DHAVE_RTEMS_RTEMS_DEBUGGER_H=1
 endif
 
 FIO_OBJS = $(OBJS) fio.o 

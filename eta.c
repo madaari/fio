@@ -1,7 +1,6 @@
 /*
  * Status and ETA code
  */
-
 #include <unistd.h>
 #include <string.h>
 #ifdef CONFIG_VALGRIND_DEV

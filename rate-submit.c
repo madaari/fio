@@ -4,7 +4,6 @@
  * Copyright (C) 2015 Jens Axboe <axboe@kernel.dk>
  *
  */
-
 #include "fio.h"
 #include "ioengines.h"
 #include "lib/getrusage.h"

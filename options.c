@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -4639,7 +4638,6 @@ static void options_to_lopts(struct fio_option *opts,
 
 		i++;
 		o++;
-		
 		assert(i < FIO_NR_OPTIONS);
 	}
 }
@@ -4790,6 +4788,7 @@ static char *bc_calc(char *str)
 #else /* __rtems__ */
 	log_err("fio: performing math is not supported\n");
 	printf("fio: performing math is not supported\n");
+	return ' ';
 #endif /* __rtems__ */
 }
 

@@ -21,9 +21,8 @@
  *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
-
 #include "fio.h"
-static
+
 int main(int argc, char *argv[], char *envp[])
 {
 	int ret = 1;

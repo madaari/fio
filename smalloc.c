@@ -2,7 +2,6 @@
  * simple memory allocator, backed by mmap() so that it hands out memory
  * that can be shared across processes and threads
  */
-
 #include <sys/mman.h>
 #include <assert.h>
 #include <string.h>
@@ -20,8 +19,11 @@
 #define SMALLOC_BPL	(SMALLOC_BPB * SMALLOC_BPI)
 
 #define INITIAL_SIZE	16*1024*1024	/* new pool size */
+#ifndef __rtems__
+#define INITIAL_POOLS	8		/* maximum number of pools to setup */
+#else /* __rtems__ */
 #define INITIAL_POOLS	2		/* maximum number of pools to setup */
-
+#endif /* __rtems__ */
 #define MAX_POOLS	16
 
 #define SMALLOC_PRE_RED		0xdeadbeefU
@@ -190,9 +192,8 @@ static bool add_pool(struct pool *pool, unsigned int alloc_size)
 	pool->bitmap = (unsigned int *)((char *) ptr + (pool->nr_blocks * SMALLOC_BPL));
 	memset(pool->bitmap, 0, bitmap_blocks * sizeof(unsigned int));
 	pool->lock = fio_sem_init(FIO_SEM_UNLOCKED);
-	if (!pool->lock){
+	if (!pool->lock)
 		goto out_fail;
-	}
 
 	nr_pools++;
 	return true;
@@ -201,9 +202,9 @@ out_fail:
 	if (pool->map)
 #ifdef __rtems__
 		free(pool->map);
-#else
+#else /* __rtems__ */
 		munmap(pool->map, pool->mmap_size);
-#endif
+#endif /* __rtems__ */
 	return false;
 }
 

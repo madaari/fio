@@ -199,9 +199,9 @@ void cgroup_shutdown(struct thread_data *td, char **mnt)
 }
 #ifdef __rtems__
 void
-#else
+#else /* __rtems__ */
 static void fio_init
-#endif
+#endif /* __rtems__ */
 cgroup_init(void)
 {
 	lock = fio_sem_init(FIO_SEM_UNLOCKED);

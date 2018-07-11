@@ -179,9 +179,9 @@ static struct ioengine_ops ioengine = {
 
 #ifdef __rtems__
 void
-#else
+#else /* __rtems__ */
 static void fio_init
-#endif
+#endif /* __rtems__ */
 fio_gf_register(void)
 {
 	register_ioengine(&ioengine);

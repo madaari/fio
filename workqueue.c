@@ -4,7 +4,6 @@
  * Copyright (C) 2015 Jens Axboe <axboe@kernel.dk>
  *
  */
-
 #include <unistd.h>
 
 #include "fio.h"
@@ -136,6 +135,7 @@ static void *worker_thread(void *data)
 	FLIST_HEAD(local_list);
 
 	sk_out_assign(sw->sk_out);
+
 #ifndef __rtems__
 	if (wq->ops.nice) {
 		if (nice(wq->ops.nice) < 0) {
