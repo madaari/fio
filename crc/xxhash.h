@@ -117,6 +117,7 @@ void*         XXH32_init   (uint32_t seed);
 XXH_errorcode XXH32_update (void* state, const void* input, int len);
 uint32_t  XXH32_digest (void* state);
 #endif /* __rtems__ */
+
 /*
 These functions calculate the xxhash of an input provided in several small packets,
 as opposed to an input provided as a single block.
@@ -159,6 +160,7 @@ This pointer must then be provided as 'state' into XXH32_resetState(), which ini
 For static allocation purposes (such as allocation on stack, or freestanding systems without malloc()),
 use the structure XXH32_stateSpace_t, which will ensure that memory space is large enough and correctly aligned to access 'long long' fields.
 */
+
 
 #ifndef __rtems__
 unsigned int XXH32_intermediateDigest (void* state);

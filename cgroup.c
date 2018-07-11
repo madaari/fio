@@ -197,6 +197,7 @@ void cgroup_shutdown(struct thread_data *td, char **mnt)
 
 	cgroup_del_pid(td, *mnt);
 }
+
 #ifdef __rtems__
 void
 #else /* __rtems__ */

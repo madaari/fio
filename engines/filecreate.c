@@ -106,6 +106,7 @@ static struct ioengine_ops ioengine = {
 	.flags		= FIO_DISKLESSIO | FIO_SYNCIO | FIO_FAKEIO |
 				FIO_NOSTATS | FIO_NOFILEHASH,
 };
+
 #ifdef __rtems__
 void
 #else /* __rtems__ */

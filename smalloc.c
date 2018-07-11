@@ -24,6 +24,7 @@
 #else /* __rtems__ */
 #define INITIAL_POOLS	2		/* maximum number of pools to setup */
 #endif /* __rtems__ */
+
 #define MAX_POOLS	16
 
 #define SMALLOC_PRE_RED		0xdeadbeefU
