@@ -39,7 +39,7 @@ static inline const char *option_matches(const char *arg_str,
 	return arg_str;
 }
 
-int getopt_long_only(int argc, char *const *argv, const char *optstring,
+int getopt_long_only_fio(int argc, char *const *argv, const char *optstring,
 		const struct option *longopts, int *longindex)
 {
 	const char *carg;

@@ -1,8 +1,3 @@
-#ifdef __rtems__
-#include <machine/rtems-bsd-user-space.h>
-#include <machine/rtems-bsd-program.h>
-#include "os/rtems/headers/rtems-bsd-fio-namespace.h"
-#endif /* __rtems__ */
 
 #include <unistd.h>
 #include <fcntl.h>
@@ -1923,7 +1918,3 @@ int fio_set_directio(struct thread_data *td, struct fio_file *f)
 	return -1;
 #endif
 }
-
-#ifdef __rtems__
-#include "os/rtems/headers/rtems-bsd-fio-filesetup-data.h"
-#endif /* __rtems__ */

@@ -1,9 +1,3 @@
-#ifdef __rtems__
-#include <machine/rtems-bsd-user-space.h>
-#include <machine/rtems-bsd-program.h>
-#include "os/rtems/headers/rtems-bsd-fio-namespace.h"
-#endif /* __rtems__ */
-
 #include "fio.h"
 #include "fio_sem.h"
 #include "smalloc.h"
@@ -138,6 +132,3 @@ void flow_exit(void)
 	if (flow_list)
 		sfree(flow_list);
 }
-#ifdef __rtems__
-#include "os/rtems/headers/rtems-bsd-fio-flow-data.h"
-#endif /* __rtems__ */

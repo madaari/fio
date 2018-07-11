@@ -10,12 +10,6 @@
  * later version.
  *
  */
-#ifdef __rtems__
-#include <machine/rtems-bsd-user-space.h>
-#include <machine/rtems-bsd-program.h>
-#include "../os/rtems/headers/rtems-bsd-fio-namespace.h"
-#include "parse.h"
-#endif /* __rtems__ */
 
 #include <string.h>
 
@@ -201,6 +195,3 @@ void fio_sha512_update(struct fio_sha512_ctx *sctx, const uint8_t *data,
 	/* erase our data */
 	memset(sctx->W, 0, sizeof(sctx->W));
 }
-#ifdef __rtems__
-#include "../os/rtems/headers/rtems-bsd-fio-sha512-data.h"
-#endif /* __rtems__ */

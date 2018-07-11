@@ -1,10 +1,3 @@
-#ifdef __rtems__
-#include <machine/rtems-bsd-user-space.h>
-#include <machine/rtems-bsd-program.h>
-#include "../os/rtems/headers/rtems-bsd-fio-namespace.h"
-#include "parse.h"
-#endif /* __rtems__ */
-
 #include <stdio.h>
 #include <string.h>
 #include "../flist.h"
@@ -145,6 +138,3 @@ void flist_sort(void *priv, struct flist_head *head,
 
 	merge_and_restore_back_links(priv, cmp, head, part[max_lev], list);
 }
-#ifdef __rtems__
-#include "../os/rtems/headers/rtems-bsd-fio-flist_sort-data.h"
-#endif /* __rtems__ */

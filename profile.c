@@ -1,8 +1,3 @@
-#ifdef __rtems__
-#include <machine/rtems-bsd-user-space.h>
-#include <machine/rtems-bsd-program.h>
-#include "os/rtems/headers/rtems-bsd-fio-namespace.h"
-#endif /* __rtems__ */
 
 #include "fio.h"
 #include "profile.h"
@@ -126,6 +121,3 @@ void profile_td_exit(struct thread_data *td)
 	if (ops->td_exit)
 		ops->td_exit(td);
 }
-#ifdef __rtems__
-#include "os/rtems/headers/rtems-bsd-fio-profile-data.h"
-#endif /* __rtems__ */

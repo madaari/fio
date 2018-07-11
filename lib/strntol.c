@@ -1,9 +1,3 @@
-#ifdef __rtems__
-#include <machine/rtems-bsd-user-space.h>
-#include <machine/rtems-bsd-program.h>
-#include "../os/rtems/headers/rtems-bsd-fio-namespace.h"
-#include "parse.h"
-#endif /* __rtems__ */
 
 #include <string.h>
 #include <stdlib.h>
@@ -38,6 +32,3 @@ long strntol(const char *str, size_t sz, char **end, int base)
 		*end = (char *)str + (*end - buf);
 	return ret;
 }
-#ifdef __rtems__
-#include "../os/rtems/headers/rtems-bsd-fio-strntol-data.h"
-#endif /* __rtems__ */

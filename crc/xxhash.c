@@ -29,12 +29,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 You can contact the author at :
 - xxHash source repository : http://code.google.com/p/xxhash/
 */
-#ifdef __rtems__
-#include <machine/rtems-bsd-user-space.h>
-#include <machine/rtems-bsd-program.h>
-#include "../os/rtems/headers/rtems-bsd-fio-namespace.h"
-#include "parse.h"
-#endif /* __rtems__ */
 
 //**************************************
 // Tuning parameters
@@ -424,6 +418,3 @@ uint32_t XXH32_digest (void* state_in)
 
     return h32;
 }
-#ifdef __rtems__
-#include "../os/rtems/headers/rtems-bsd-fio-xxhash-data.h"
-#endif /* __rtems__ */

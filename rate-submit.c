@@ -4,11 +4,6 @@
  * Copyright (C) 2015 Jens Axboe <axboe@kernel.dk>
  *
  */
-#ifdef __rtems__
-#include <machine/rtems-bsd-user-space.h>
-#include <machine/rtems-bsd-program.h>
-#include "os/rtems/headers/rtems-bsd-fio-namespace.h"
-#endif /* __rtems__ */
 
 #include "fio.h"
 #include "ioengines.h"
@@ -252,6 +247,3 @@ void rate_submit_exit(struct thread_data *td)
 
 	workqueue_exit(&td->io_wq);
 }
-#ifdef __rtems__
-#include "os/rtems/headers/rtems-bsd-fio-rate-submit-data.h"
-#endif /* __rtems__ */

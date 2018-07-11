@@ -1,9 +1,3 @@
-#ifdef __rtems__
-#include <machine/rtems-bsd-user-space.h>
-#include <machine/rtems-bsd-program.h>
-#include "../os/rtems/headers/rtems-bsd-fio-namespace.h"
-#define calloc(nelem, elsize) rtems_bsd_program_calloc(nelem, elsize)
-#endif /* __rtems__ */
 
 #include "../fio.h"
 #include "../profile.h"
@@ -147,6 +141,3 @@ tiobench_unregister(void)
 {
 	unregister_profile(&tiobench_profile);
 }
-#ifdef __rtems__
-#include "../os/rtems/headers/rtems-bsd-fio-tiobench-data.h"
-#endif /* __rtems__ */

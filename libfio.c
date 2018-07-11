@@ -21,11 +21,6 @@
  *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
-#ifdef __rtems__
-#include <machine/rtems-bsd-user-space.h>
-#include <machine/rtems-bsd-program.h>
-#include "os/rtems/headers/rtems-bsd-fio-namespace.h"
-#endif /* __rtems__ */
 
 #include <string.h>
 #include <signal.h>
@@ -435,6 +430,3 @@ void deinitialize_fio(void)
 {
 	fio_keywords_exit();
 }
-#ifdef __rtems__
-#include "os/rtems/headers/rtems-bsd-fio-libfio-data.h"
-#endif /* __rtems__ */

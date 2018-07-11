@@ -1,8 +1,3 @@
-#ifdef __rtems__
-#include <machine/rtems-bsd-user-space.h>
-#include <machine/rtems-bsd-program.h>
-#include "os/rtems/headers/rtems-bsd-fio-namespace.h"
-#endif /* __rtems__ */
 
 #include <sys/time.h>
 #include <time.h>
@@ -108,6 +103,3 @@ void fio_gtod_set_cpu(unsigned int cpu)
 	fio_cpu_set(&fio_gtod_cpumask, cpu);
 #endif
 }
-#ifdef __rtems__
-#include "os/rtems/headers/rtems-bsd-fio-gettime-thread-data.h"
-#endif /* __rtems__ */

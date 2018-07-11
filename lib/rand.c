@@ -32,12 +32,6 @@
    s1 > 1, s2 > 7, s3 > 15.
 
 */
-#ifdef __rtems__
-#include <machine/rtems-bsd-user-space.h>
-#include <machine/rtems-bsd-program.h>
-#include "../os/rtems/headers/rtems-bsd-fio-namespace.h"
-#include "parse.h"
-#endif /* __rtems__ */
 
 #include <string.h>
 #include "rand.h"
@@ -202,6 +196,3 @@ unsigned long fill_random_buf_percentage(struct frand_state *fs, void *buf,
 					pattern, pbytes);
 	return r;
 }
-#ifdef __rtems__
-#include "../os/rtems/headers/rtems-bsd-fio-rand-data.h"
-#endif /* __rtems__ */

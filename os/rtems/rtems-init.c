@@ -1,11 +1,7 @@
-/*
- * Copyright (c) 2010-2016 embedded brains GmbH.  All rights reserved.
- *
- *  embedded brains GmbH
- *  Dornierstr. 4
- *  82178 Puchheim
- *  Germany
- *  <rtems@embedded-brains.de>
+/*-
+ * Copyright (c) 2018 Udit kumar agarwal <dev.madaari@gmail.com>
+ * Copyright (c) 2018 Christian Mauderer <christian.mauderer@embedded-brains.de>
+ * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -28,6 +24,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
+
 #include <sys/param.h>
 #include <sys/stat.h>
 #include <sys/socket.h>
@@ -59,8 +56,6 @@
 #include <rtems/console.h>
 #include <rtems/shell.h>
 
-#define DEFAULT_NETWORK_SHELL
-
 rtems_bsd_command_fio(int argc, char *argv[]);
 
 static rtems_status_code
@@ -76,21 +71,21 @@ media_listener(rtems_media_event event, rtems_media_state state,
 		printf(", arg = %p\n", arg);
 	}
 
-	printf("\n");
-
-	if (event == RTEMS_MEDIA_EVENT_MOUNT && state == RTEMS_MEDIA_STATE_SUCCESS) {
-		printf("MEDIA MOUNTED");
-	}
-
 	return RTEMS_SUCCESSFUL;
 }
 
 rtems_shell_cmd_t rtems_shell_fio_Command = {
     .name = "fio",
-    .usage = "fio",
+    .usage = "fio --help",
     .topic = "user",
     .command = rtems_bsd_command_fio
 };
+
+int nice(int incr)
+{
+    /* FIXME */
+    return 0;
+}
 
 static void
 early_initialization(void)
@@ -114,12 +109,13 @@ early_initialization(void)
 	);
 	assert(sc == RTEMS_SUCCESSFUL);
 }
+
 void
 Init(rtems_task_argument arg)
 {
 	rtems_status_code sc;
 	
-	puts("FIO TEST");
+	puts("\n*** FIO - Flexible I/O tester ***\n\n");
 
 	early_initialization();
 	rtems_bsd_initialize();
@@ -136,8 +132,6 @@ Init(rtems_task_argument arg)
 }
 
 
-#define DEFAULT_NETWORK_DHCPCD_ENABLE
-
 #define CONFIGURE_MICROSECONDS_PER_TICK 1000
 
 #define CONFIGURE_MAXIMUM_DRIVERS 32
@@ -149,12 +143,6 @@ Init(rtems_task_argument arg)
 /*
  * Configure LibBSD.
  */
-
-#if defined(LIBBSP_I386_PC386_BSP_H)
-#define RTEMS_BSD_CONFIG_DOMAIN_PAGE_MBUFS_SIZE (64 * 1024 * 1024)
-#elif defined(LIBBSP_POWERPC_QORIQ_BSP_H)
-#define RTEMS_BSD_CONFIG_DOMAIN_PAGE_MBUFS_SIZE (32 * 1024 * 1024)
-#endif
 
 #define RTEMS_BSD_CONFIG_NET_PF_UNIX
 #define RTEMS_BSD_CONFIG_NET_IP_MROUTE
@@ -183,21 +171,20 @@ Init(rtems_task_argument arg)
 
 #define CONFIGURE_STACK_CHECKER_ENABLED
 
-#define CONFIGURE_BDBUF_BUFFER_MAX_SIZE (64 * 1024)
-#define CONFIGURE_BDBUF_MAX_READ_AHEAD_BLOCKS 4
+/* Turn cache off */
+#define CONFIGURE_BDBUF_BUFFER_MAX_SIZE (4 * 1024)
+#define CONFIGURE_BDBUF_MAX_READ_AHEAD_BLOCKS 0
 #define CONFIGURE_BDBUF_CACHE_MEMORY_SIZE (1 * 1024 * 1024)
 
 #define CONFIGURE_RTEMS_INIT_TASKS_TABLE
 
-#define CONFIGURE_INIT_TASK_STACK_SIZE (128 * 1024)
+#define CONFIGURE_INIT_TASK_STACK_SIZE (256 * 1024)
 #define CONFIGURE_INIT_TASK_INITIAL_MODES RTEMS_DEFAULT_MODES
 #define CONFIGURE_INIT_TASK_ATTRIBUTES RTEMS_FLOATING_POINT
 
 #define CONFIGURE_INIT
-#define CPU_STACK_MINIMUM_SIZE           (128*1024)
+#define CPU_STACK_MINIMUM_SIZE           (256*1024)
 #include <rtems/confdefs.h>
-
-#ifdef DEFAULT_NETWORK_SHELL
 
 #define CONFIGURE_SHELL_COMMANDS_INIT
 
@@ -205,21 +192,7 @@ Init(rtems_task_argument arg)
 
 #include <rtems/netcmds-config.h>
 
-#ifdef RTEMS_BSD_MODULE_USER_SPACE_WLANSTATS
-  #define SHELL_WLANSTATS_COMMAND &rtems_shell_WLANSTATS_Command,
-#else
-  #define SHELL_WLANSTATS_COMMAND
-#endif
-
-#ifdef RTEMS_BSD_MODULE_USR_SBIN_WPA_SUPPLICANT
-  #define SHELL_WPA_SUPPLICANT_COMMAND &rtems_shell_WPA_SUPPLICANT_Command,
-#else
-  #define SHELL_WPA_SUPPLICANT_COMMAND
-#endif
-
 #define CONFIGURE_SHELL_USER_COMMANDS \
-  SHELL_WLANSTATS_COMMAND \
-  SHELL_WPA_SUPPLICANT_COMMAND \
   &bsp_interrupt_shell_command, \
   &rtems_shell_ARP_Command, \
   &rtems_shell_HOSTNAME_Command, \
@@ -237,6 +210,7 @@ Init(rtems_task_argument arg)
 #define CONFIGURE_SHELL_COMMAND_PERIODUSE
 #define CONFIGURE_SHELL_COMMAND_STACKUSE
 #define CONFIGURE_SHELL_COMMAND_PROFREPORT
+#define CONFIGURE_SHELL_COMMAND_MKRFS
 
 #define CONFIGURE_SHELL_COMMAND_CP
 #define CONFIGURE_SHELL_COMMAND_PWD
@@ -252,17 +226,6 @@ Init(rtems_task_argument arg)
 #define CONFIGURE_SHELL_COMMAND_RM
 #define CONFIGURE_SHELL_COMMAND_MALLOC_INFO
 #define CONFIGURE_SHELL_COMMAND_SHUTDOWN
-
-#endif /* DEFAULT_NETWORK_SHELL */
-
-
-#ifdef RTEMS_BSD_MODULE_USR_SBIN_WPA_SUPPLICANT
-  #define SHELL_WPA_SUPPLICANT_COMMANDS \
-    &rtems_shell_WPA_SUPPLICANT_Command, \
-    &rtems_shell_WPA_SUPPLICANT_FORK_Command,
-#else
-  #define SHELL_WPA_SUPPLICANT_COMMANDS
-#endif
 
 #define CONFIGURE_SHELL_COMMAND_FDISK
 #define CONFIGURE_SHELL_COMMAND_BLKSTATS

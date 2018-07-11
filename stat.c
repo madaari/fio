@@ -1,8 +1,3 @@
-#ifdef __rtems__
-#include <machine/rtems-bsd-user-space.h>
-#include <machine/rtems-bsd-program.h>
-#include "os/rtems/headers/rtems-bsd-fio-namespace.h"
-#endif /* __rtems__ */
 
 #include <stdio.h>
 #include <string.h>
@@ -300,13 +295,10 @@ void show_group_stats(struct group_run_stats *rs, struct buf_output *out)
 	int i;
 
 	log_buf(out, "\nRun status group %lu (all jobs):\n", rs->groupid);
-
 	for (i = 0; i < DDIR_RWDIR_CNT; i++) {
 		const int i2p = is_power_of_2(rs->kb_base);
-
 		if (!rs->max_run[i])
 			continue;
-
 		io = num2str(rs->iobytes[i], rs->sig_figs, 1, i2p, N2S_BYTE);
 		ioalt = num2str(rs->iobytes[i], rs->sig_figs, 1, !i2p, N2S_BYTE);
 		agg = num2str(rs->agg[i], rs->sig_figs, 1, i2p, rs->unit_base);
@@ -1932,13 +1924,14 @@ void __show_run_stats(void)
 			show_group_stats(rs, &output[__FIO_OUTPUT_NORMAL]);
 	}
 
-	if (is_backend)
-		fio_server_send_du();
+	if (is_backend){
+		fio_server_send_du();}
+		
 	else if (output_format & FIO_OUTPUT_NORMAL) {
 		show_disk_util(0, NULL, &output[__FIO_OUTPUT_NORMAL]);
 		show_idle_prof_stats(FIO_OUTPUT_NORMAL, NULL, &output[__FIO_OUTPUT_NORMAL]);
 	}
-
+    
 	for (i = 0; i < FIO_OUTPUT_NR; i++) {
 		struct buf_output *out = &output[i];
 
@@ -2729,6 +2722,3 @@ uint32_t *io_u_block_info(struct thread_data *td, struct io_u *io_u)
 	assert(idx < td->ts.nr_block_infos);
 	return info;
 }
-#ifdef __rtems__
-#include "os/rtems/headers/rtems-bsd-fio-stat-data.h"
-#endif /* __rtems__ */

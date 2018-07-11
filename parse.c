@@ -1,11 +1,6 @@
 /*
  * This file contains the ini and command liner parser main.
  */
-#ifdef __rtems__
-#include <machine/rtems-bsd-user-space.h>
-#include <machine/rtems-bsd-program.h>
-#include "os/rtems/headers/rtems-bsd-fio-namespace.h"
-#endif /* __rtems__ */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -1399,6 +1394,3 @@ void options_free(const struct fio_option *options, void *data)
 		}
 	}
 }
-#ifdef __rtems__
-#include "os/rtems/headers/rtems-bsd-fio-parse-data.h"
-#endif /* __rtems__ */

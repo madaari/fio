@@ -1,8 +1,3 @@
-#ifdef __rtems__
-#include <machine/rtems-bsd-user-space.h>
-#include <machine/rtems-bsd-program.h>
-#include "os/rtems/headers/rtems-bsd-fio-namespace.h"
-#endif /* __rtems__ */
 
 #include <unistd.h>
 #include <string.h>
@@ -2202,6 +2197,3 @@ int do_io_u_trim(const struct thread_data *td, struct io_u *io_u)
 	return 0;
 #endif
 }
-#ifdef __rtems__
-#include "os/rtems/headers/rtems-bsd-fio-io_u-data.h"
-#endif /* __rtems__ */

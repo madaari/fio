@@ -1,9 +1,3 @@
-#ifdef __rtems__
-#include <machine/rtems-bsd-user-space.h>
-#include <machine/rtems-bsd-program.h>
-#include "../os/rtems/headers/rtems-bsd-fio-namespace.h"
-#include "parse.h"
-#endif /* __rtems__ */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -541,6 +535,3 @@ int paste_format(const char *pattern, unsigned int pattern_len,
 	/* Spread filled chunk all over the buffer */
 	return dup_pattern(out, out_len, pattern_len);
 }
-#ifdef __rtems__
-#include "../os/rtems/headers/rtems-bsd-fio-pattern-data.h"
-#endif /* __rtems__ */

@@ -30,12 +30,6 @@
  * any later version.
  *
  */
-#ifdef __rtems__
-#include <machine/rtems-bsd-user-space.h>
-#include <machine/rtems-bsd-program.h>
-#include "../os/rtems/headers/rtems-bsd-fio-namespace.h"
-#include "parse.h"
-#endif /* __rtems__ */
 
 #include "crc32c.h"
 
@@ -129,6 +123,3 @@ uint32_t crc32c_sw(unsigned char const *data, unsigned long length)
 
 	return crc;
 }
-#ifdef __rtems__
-#include "../os/rtems/headers/rtems-bsd-fio-crc32c-data.h"
-#endif /* __rtems__ */

@@ -4,12 +4,6 @@
  * This source code is licensed under the GNU General Public License,
  * Version 2. See the file COPYING for more details.
  */
-#ifdef __rtems__
-#include <machine/rtems-bsd-user-space.h>
-#include <machine/rtems-bsd-program.h>
-#include "../os/rtems/headers/rtems-bsd-fio-namespace.h"
-#include "parse.h"
-#endif /* __rtems__ */
 
 #include "crc16.h"
 
@@ -58,6 +52,3 @@ unsigned short fio_crc16(const void *buffer, unsigned int len)
 		crc = crc16_byte(crc, *cp++);
 	return crc;
 }
-#ifdef __rtems__
-#include "../os/rtems/headers/rtems-bsd-fio-crc16-data.h"
-#endif /* __rtems__ */

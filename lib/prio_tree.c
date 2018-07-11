@@ -10,12 +10,6 @@
  *
  * 02Feb2004	Initial version
  */
-#ifdef __rtems__
-#include <machine/rtems-bsd-user-space.h>
-#include <machine/rtems-bsd-program.h>
-#include "../os/rtems/headers/rtems-bsd-fio-namespace.h"
-#include "parse.h"
-#endif /* __rtems__ */
 
 #include <assert.h>
 #include <stdlib.h>
@@ -478,6 +472,3 @@ repeat:
 
 	goto repeat;
 }
-#ifdef __rtems__
-#include "../os/rtems/headers/rtems-bsd-fio-prio_tree-data.h"
-#endif /* __rtems__ */

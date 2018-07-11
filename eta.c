@@ -1,11 +1,6 @@
 /*
  * Status and ETA code
  */
-#ifdef __rtems__
-#include <machine/rtems-bsd-user-space.h>
-#include <machine/rtems-bsd-program.h>
-#include "os/rtems/headers/rtems-bsd-fio-namespace.h"
-#endif /* __rtems__ */
 
 #include <unistd.h>
 #include <string.h>
@@ -682,6 +677,3 @@ void print_status_init(int thr_number)
 	__run_str[thr_number] = 'P';
 	update_condensed_str(__run_str, run_str);
 }
-#ifdef __rtems__
-#include "os/rtems/headers/rtems-bsd-fio-eta-data.h"
-#endif /* __rtems__ */

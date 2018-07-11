@@ -1,9 +1,3 @@
-#ifdef __rtems__
-#include <machine/rtems-bsd-user-space.h>
-#include <machine/rtems-bsd-program.h>
-#include "os/rtems/headers/rtems-bsd-fio-namespace.h"
-#include "parse.h"
-#endif /* __rtems__ */
 
 #include <stdio.h>
 #include <string.h>
@@ -88,6 +82,3 @@ err:
 		fio_rwlock_remove(lock);
 	return NULL;
 }
-#ifdef __rtems__
-#include "os/rtems/headers/rtems-bsd-fio-rwlock-data.h"
-#endif /* __rtems__ */

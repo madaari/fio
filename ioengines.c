@@ -9,18 +9,11 @@
  * generic io engine that could be used for other projects.
  *
  */
-#ifdef __rtems__
-#include <machine/rtems-bsd-user-space.h>
-#include <machine/rtems-bsd-program.h>
-#include "os/rtems/headers/rtems-bsd-fio-namespace.h"
-#endif /* __rtems__ */
 
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
-#ifndef __rtems__
 #include <dlfcn.h>
-#endif
 #include <fcntl.h>
 #include <assert.h>
 
@@ -85,8 +78,6 @@ static struct ioengine_ops *find_ioengine(const char *name)
 static struct ioengine_ops *dlopen_ioengine(struct thread_data *td,
 					    const char *engine_lib)
 {
-	
-#ifndef __rtems__
 	struct ioengine_ops *ops;
 	void *dlhandle;
 
@@ -115,7 +106,6 @@ static struct ioengine_ops *dlopen_ioengine(struct thread_data *td,
 	 */
 	if (!ops) {
 		get_ioengine_t get_ioengine = dlsym(dlhandle, "get_ioengine");
-
 		if (get_ioengine)
 			get_ioengine(&ops);
 	}
@@ -128,9 +118,6 @@ static struct ioengine_ops *dlopen_ioengine(struct thread_data *td,
 
 	td->io_ops_dlhandle = dlhandle;
 	return ops;
-#else
-	return NULL;
-#endif
 }
 
 static struct ioengine_ops *__load_ioengine(const char *name)
@@ -154,7 +141,6 @@ static struct ioengine_ops *__load_ioengine(const char *name)
 
 struct ioengine_ops *load_ioengine(struct thread_data *td)
 {
-#ifndef __rtems__	
 	struct ioengine_ops *ops = NULL;
 	const char *name;
 
@@ -192,9 +178,6 @@ struct ioengine_ops *load_ioengine(struct thread_data *td)
 		return NULL;
 
 	return ops;
-#else
-	return NULL;
-#endif
 }
 
 /*
@@ -629,6 +612,3 @@ int fio_show_ioengine_help(const char *engine)
 	free_ioengine(&td);
 	return ret;
 }
-#ifdef __rtems__
-#include "os/rtems/headers/rtems-bsd-fio-ioengines-data.h"
-#endif /* __rtems__ */

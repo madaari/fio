@@ -1,9 +1,3 @@
-#ifdef __rtems__
-#include <machine/rtems-bsd-user-space.h>
-#include <machine/rtems-bsd-program.h>
-#include "os/rtems/headers/rtems-bsd-fio-namespace.h"
-#include "parse.h"
-#endif /* __rtems__ */
 
 #include <stdlib.h>
 #include "io_u_queue.h"
@@ -49,6 +43,3 @@ void io_u_rexit(struct io_u_ring *ring)
 {
 	free(ring->ring);
 }
-#ifdef __rtems__
-#include "os/rtems/headers/rtems-bsd-fio-io_u_queue-data.h"
-#endif /* __rtems__ */

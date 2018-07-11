@@ -20,7 +20,7 @@ enum {
 	optional_argument = 2,
 };
 
-int getopt_long_only(int, char *const *, const char *, const struct option *, int *);
+int getopt_long_only_fio(int, char *const *, const char *, const struct option *, int *);
 
 #endif
 #endif

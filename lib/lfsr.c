@@ -1,10 +1,3 @@
-#ifdef __rtems__
-#include <machine/rtems-bsd-user-space.h>
-#include <machine/rtems-bsd-program.h>
-#include "../os/rtems/headers/rtems-bsd-fio-namespace.h"
-#include "parse.h"
-#endif /* __rtems__ */
-
 #include <stdio.h>
 
 #include "lfsr.h"
@@ -258,6 +251,3 @@ int lfsr_init(struct fio_lfsr *fl, uint64_t nums, unsigned long seed,
 
 	return 0;
 }
-#ifdef __rtems__
-#include "../os/rtems/headers/rtems-bsd-fio-lfsr-data.h"
-#endif /* __rtems__ */

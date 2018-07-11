@@ -1,8 +1,3 @@
-#ifdef __rtems__
-#include <machine/rtems-bsd-user-space.h>
-#include <machine/rtems-bsd-program.h>
-#include "os/rtems/headers/rtems-bsd-fio-namespace.h"
-#endif /* __rtems__ */
 
 #include <stdlib.h>
 
@@ -378,6 +373,3 @@ uint64_t steadystate_iops_mean(struct thread_stat *ts)
 
 	return sum / ts->ss_dur;
 }
-#ifdef __rtems__
-#include "os/rtems/headers/rtems-bsd-fio-steadystate-data.h"
-#endif /* __rtems__ */

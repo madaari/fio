@@ -1,8 +1,3 @@
-#ifdef __rtems__
-#include <machine/rtems-bsd-user-space.h>
-#include <machine/rtems-bsd-program.h>
-#include "os/rtems/headers/rtems-bsd-fio-namespace.h"
-#endif /* __rtems__ */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -2057,6 +2052,3 @@ int fio_handle_clients(struct client_ops *ops)
 	free(pfds);
 	return retval || error_clients;
 }
-#ifdef __rtems__
-#include "os/rtems/headers/rtems-bsd-fio-client-data.h"
-#endif /* __rtems__ */

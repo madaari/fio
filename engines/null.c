@@ -13,11 +13,6 @@
  * LD_LIBRARY_PATH=./engines ./fio examples/cpp_null.fio
  *
  */
-#ifdef __rtems__
-#include <machine/rtems-bsd-user-space.h>
-#include <machine/rtems-bsd-program.h>
-#include "../os/rtems/headers/rtems-bsd-fio-namespace.h"
-#endif /* __rtems__ */
 
 #include <stdlib.h>
 #include <assert.h>
@@ -290,6 +285,3 @@ void get_ioengine(struct ioengine_ops **ioengine_ptr)
 #endif /* FIO_EXTERNAL_ENGINE */
 
 #endif /* __cplusplus */
-#ifdef __rtems__
-#include "../os/rtems/headers/rtems-bsd-fio-null-data.h"
-#endif /* __rtems__ */

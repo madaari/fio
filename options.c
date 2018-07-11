@@ -1,8 +1,3 @@
-#ifdef __rtems__
-#include <machine/rtems-bsd-user-space.h>
-#include <machine/rtems-bsd-program.h>
-#include "os/rtems/headers/rtems-bsd-fio-namespace.h"
-#endif /* __rtems__ */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -4680,10 +4675,8 @@ void fio_options_dup_and_init(struct option *long_options)
 	options_init(fio_options);
 
 	i = 0;
-	while (long_options[i].name){
-		printf("name of arg is:%s",long_options[i].name);
-		printf("Value of i2 is %d \n",i);
-		i++;}
+	while (long_options[i].name)
+		i++;
 
 	options_to_lopts(fio_options, long_options, i, FIO_GETOPT_JOB);
 }
@@ -5232,6 +5225,3 @@ void fio_option_mark_set(struct thread_options *o, const struct fio_option *opt)
 	offset = opt_off & ((8 * sizeof(uint64_t)) - 1);
 	o->set_options[index] |= (uint64_t)1 << offset;
 }
-#ifdef __rtems__
-#include "os/rtems/headers/rtems-bsd-fio-options-data.h"
-#endif /* __rtems__ */

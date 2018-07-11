@@ -2,12 +2,6 @@
  * This file contains job initialization and setup functions.
  */
 
-#ifdef __rtems__
-#include <machine/rtems-bsd-user-space.h>
-#include <machine/rtems-bsd-program.h>
-#include "os/rtems/headers/rtems-bsd-fio-namespace.h"
-#endif /* __rtems__ */
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -42,7 +36,13 @@
 #include "filelock.h"
 #include "steadystate.h"
 
+/* RTEMS uses newlib's getopt_long_only_r() */
+#ifdef __rtems__
+#include <getopt.h> 
+#else
 #include "oslib/getopt.h"
+#endif /* __rtems__ */
+
 #include "oslib/strcasestr.h"
 
 #include "crc/test.h"
@@ -97,6 +97,10 @@ unsigned int *fio_warned = NULL;
 
 static char cmd_optstr[256];
 static bool did_arg;
+
+#ifdef __rtems__ 
+    struct getopt_data getopt_reent;
+#endif
 
 #define FIO_CLIENT_FLAG		(1 << 16)
 
@@ -1094,11 +1098,11 @@ int ioengine_load(struct thread_data *td)
 		log_err("fio: internal fault, no IO engine specified\n");
 		return 1;
 	}
-
+    
 	if (td->io_ops) {
 		struct ioengine_ops *ops;
 		void *dlhandle;
-
+        
 		/* An engine is loaded, but the requested ioengine
 		 * may have changed.
 		 */
@@ -1126,7 +1130,7 @@ int ioengine_load(struct thread_data *td)
 		/* Unload the old engine. */
 		free_ioengine(td);
 	}
-
+	
 	td->io_ops = load_ioengine(td);
 	if (!td->io_ops) {
 		log_err("fio: failed to load engine\n");
@@ -1430,7 +1434,6 @@ static int add_job(struct thread_data *td, const char *jobname, int job_add_num,
 	int numjobs, file_alloced;
 	struct thread_options *o = &td->o;
 	char logname[PATH_MAX + 32];
-
 	/*
 	 * the def_thread is just for options, it's not a real job
 	 */
@@ -1743,7 +1746,6 @@ static int add_job(struct thread_data *td, const char *jobname, int job_add_num,
 				td_new->o.filename = NULL;
 			}
 		}
-
 		if (add_job(td_new, jobname, numjobs, 1, client_type))
 			goto err;
 	}
@@ -1768,8 +1770,8 @@ void add_job_opts(const char **o, int client_type)
 	while (o[i]) {
 		if (!strncmp(o[i], "name", 4)) {
 			in_global = 0;
-			if (td)
-				add_job(td, jobname, 0, 0, client_type);
+			if (td){
+				add_job(td, jobname, 0, 0, client_type);}
 			td = NULL;
 			sprintf(jobname, "%s", o[i] + 5);
 		}
@@ -1787,8 +1789,8 @@ void add_job_opts(const char **o, int client_type)
 		i++;
 	}
 
-	if (td)
-		add_job(td, jobname, 0, 0, client_type);
+	if (td){
+		add_job(td, jobname, 0, 0, client_type);}
 }
 
 static int skip_this_section(const char *name)
@@ -2061,7 +2063,6 @@ static int __parse_jobs_ini(struct thread_data *td,
 		if (!ret) {
 			if (dump_cmdline)
 				dump_opt_list(td);
-
 			ret = add_job(td, name, 0, 0, type);
 		} else {
 			log_err("fio: job %s dropped\n", name);
@@ -2451,14 +2452,20 @@ int parse_cmd_line(int argc, char *argv[], int client_type)
 	char *pid_file = NULL;
 	void *cur_client = NULL;
 	int backend = 0;
-
+    #ifdef __rtems__ 
+    memset(&getopt_reent, 0, sizeof(getopt_data));
+    #endif
 	/*
 	 * Reset optind handling, since we may call this multiple times
 	 * for the backend.
 	 */
 	optind = 1;
-
-	while ((c = getopt_long_only(argc, argv, ostr, l_opts, &lidx)) != -1) {
+	while ((c = 
+#ifdef __rtems__
+		getopt_long_only_r(argc, argv, ostr, l_opts, &lidx, &getopt_reent))!= -1) {
+#else		
+		getopt_long_only(argc, argv, ostr, l_opts, &lidx))!= -1) {
+#endif
 		if ((c & FIO_CLIENT_FLAG) || client_flag_set(c)) {
 			parse_cmd_client(cur_client, argv[optind - 1]);
 			c &= ~FIO_CLIENT_FLAG;
@@ -2996,6 +3003,3 @@ struct thread_data *get_global_options(void)
 {
 	return &def_thread;
 }
-#ifdef __rtems__
-#include "os/rtems/headers/rtems-bsd-fio-init-data.h"
-#endif /* __rtems__ */

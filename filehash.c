@@ -1,8 +1,3 @@
-#ifdef __rtems__
-#include <machine/rtems-bsd-user-space.h>
-#include <machine/rtems-bsd-program.h>
-#include "os/rtems/headers/rtems-bsd-fio-namespace.h"
-#endif /* __rtems__ */
 
 #include <stdlib.h>
 #include <assert.h>
@@ -143,6 +138,3 @@ void file_hash_init(void)
 	hash_lock = fio_sem_init(FIO_SEM_UNLOCKED);
 	file_bloom = bloom_new(BLOOM_SIZE);
 }
-#ifdef __rtems__
-#include "os/rtems/headers/rtems-bsd-fio-filehash-data.h"
-#endif /* __rtems__ */

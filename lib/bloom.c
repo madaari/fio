@@ -1,10 +1,3 @@
-#ifdef __rtems__
-#include <machine/rtems-bsd-user-space.h>
-#include <machine/rtems-bsd-program.h>
-#include "../os/rtems/headers/rtems-bsd-fio-namespace.h"
-#include "parse.h"
-#endif /* __rtems__ */
-
 #include <stdlib.h>
 
 #include "bloom.h"
@@ -128,6 +121,3 @@ bool bloom_string(struct bloom *b, const char *data, unsigned int len,
 {
 	return __bloom_check(b, data, len, set);
 }
-#ifdef __rtems__
-#include "../os/rtems/headers/rtems-bsd-fio-bloom-data.h"
-#endif /* __rtems__ */

@@ -1,9 +1,3 @@
-#ifdef __rtems__
-#include <machine/rtems-bsd-user-space.h>
-#include <machine/rtems-bsd-program.h>
-#include "../os/rtems/headers/rtems-bsd-fio-namespace.h"
-#include "parse.h"
-#endif /* __rtems__ */
 
 #include <string.h>
 #include <stdlib.h>
@@ -46,6 +40,3 @@ size_t buf_output_add(struct buf_output *out, const char *buf, size_t len)
 	out->buflen += len;
 	return len;
 }
-#ifdef __rtems__
-#include "../os/rtems/headers/rtems-bsd-fio-output_buffer-data.h"
-#endif /* __rtems__ */

@@ -5,11 +5,6 @@
  * the settings.
  *
  */
-#ifdef __rtems__
-#include <machine/rtems-bsd-user-space.h>
-#include <machine/rtems-bsd-program.h>
-#include "../os/rtems/headers/rtems-bsd-fio-namespace.h"
-#endif /* __rtems__ */
 
 #include "../fio.h"
 #include "../optgroup.h"
@@ -137,6 +132,3 @@ fio_cpuio_unregister(void)
 {
 	unregister_ioengine(&ioengine);
 }
-#ifdef __rtems__
-#include "../os/rtems/headers/rtems-bsd-fio-cpu-data.h"
-#endif /* __rtems__ */

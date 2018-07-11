@@ -1,10 +1,3 @@
-#ifdef __rtems__
-#include <machine/rtems-bsd-user-space.h>
-#include <machine/rtems-bsd-program.h>
-#include "../os/rtems/headers/rtems-bsd-fio-namespace.h"
-#include "parse.h"
-#endif /* __rtems__ */
-
 #include <stdio.h>
 #include <string.h>
 
@@ -90,6 +83,3 @@ int device_is_mounted(const char *dev)
 }
 
 #endif
-#ifdef __rtems__
-#include "../os/rtems/headers/rtems-bsd-fio-mountcheck-data.h"
-#endif /* __rtems__ */

@@ -1,12 +1,6 @@
 /*
  * Shamelessly lifted from the 2.6 kernel (crypto/md5.c)
  */
-#ifdef __rtems__
-#include <machine/rtems-bsd-user-space.h>
-#include <machine/rtems-bsd-program.h>
-#include "../os/rtems/headers/rtems-bsd-fio-namespace.h"
-#include "parse.h"
-#endif /* __rtems__ */
 
 #include <string.h>
 #include "md5.h"
@@ -151,6 +145,3 @@ void fio_md5_final(struct fio_md5_ctx *mctx)
 	mctx->block[15] = mctx->byte_count >> 29;
 	md5_transform(mctx->hash, mctx->block);
 }
-#ifdef __rtems__
-#include "../os/rtems/headers/rtems-bsd-fio-md5-data.h"
-#endif /* __rtems__ */

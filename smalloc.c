@@ -2,11 +2,6 @@
  * simple memory allocator, backed by mmap() so that it hands out memory
  * that can be shared across processes and threads
  */
-#ifdef __rtems__
-#include <machine/rtems-bsd-user-space.h>
-#include <machine/rtems-bsd-program.h>
-#include "os/rtems/headers/rtems-bsd-fio-namespace.h"
-#endif /* __rtems__ */
 
 #include <sys/mman.h>
 #include <assert.h>
@@ -181,23 +176,21 @@ static bool add_pool(struct pool *pool, unsigned int alloc_size)
 #else
 	mmap_flags |= MAP_SHARED;
 #endif
-	//ptr = mmap(NULL, alloc_size, PROT_READ|PROT_WRITE, mmap_flags, -1, 0);
+
+#ifdef __rtems__
 	ptr = (void*)malloc(alloc_size);
+#else
+	ptr = mmap(NULL, alloc_size, PROT_READ|PROT_WRITE, mmap_flags, -1, 0);
+#endif
 
 	if (ptr == MAP_FAILED)
-	{
-		printf("MMAP_FAILED!\n");
-		printf("alloc_size=%u flag:%d\n",alloc_size,mmap_flags);
-		goto out_fail;}
+		goto out_fail;
 
 	pool->map = ptr;
 	pool->bitmap = (unsigned int *)((char *) ptr + (pool->nr_blocks * SMALLOC_BPL));
-	printf("MEMSET called pool->bitmap=%p size=%u \n",pool->bitmap,bitmap_blocks * sizeof(unsigned int));
 	memset(pool->bitmap, 0, bitmap_blocks * sizeof(unsigned int));
-	printf("MEMSET over");
 	pool->lock = fio_sem_init(FIO_SEM_UNLOCKED);
 	if (!pool->lock){
-		printf("LOCK_FAILED!");
 		goto out_fail;
 	}
 
@@ -206,8 +199,11 @@ static bool add_pool(struct pool *pool, unsigned int alloc_size)
 out_fail:
 	log_err("smalloc: failed adding pool\n");
 	if (pool->map)
-		//munmap(pool->map, pool->mmap_size);
+#ifdef __rtems__
 		free(pool->map);
+#else
+		munmap(pool->map, pool->mmap_size);
+#endif
 	return false;
 }
 
@@ -476,6 +472,3 @@ char *smalloc_strdup(const char *str)
 		strcpy(ptr, str);
 	return ptr;
 }
-#ifdef __rtems__
-#include "os/rtems/headers/rtems-bsd-fio-smalloc-data.h"
-#endif /* __rtems__ */

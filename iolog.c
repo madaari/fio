@@ -2,11 +2,6 @@
  * Code related to writing an iolog of what a thread is doing, and to
  * later read that back and replay
  */
-#ifdef __rtems__
-#include <machine/rtems-bsd-user-space.h>
-#include <machine/rtems-bsd-program.h>
-#include "os/rtems/headers/rtems-bsd-fio-namespace.h"
-#endif /* __rtems__ */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -1621,6 +1616,3 @@ void fio_writeout_logs(bool unit_logs)
 	for_each_td(td, i)
 		td_writeout_logs(td, unit_logs);
 }
-#ifdef __rtems__
-#include "os/rtems/headers/rtems-bsd-fio-iolog-data.h"
-#endif /* __rtems__ */

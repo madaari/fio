@@ -2,12 +2,6 @@
  * Clock functions
  */
 
-#ifdef __rtems__
-#include <machine/rtems-bsd-user-space.h>
-#include <machine/rtems-bsd-program.h>
-#include "os/rtems/headers/rtems-bsd-fio-namespace.h"
-#endif /* __rtems__ */
-
 #include <math.h>
 
 #include "fio.h"
@@ -792,6 +786,3 @@ int fio_monotonic_clocktest(int debug)
 }
 
 #endif
-#ifdef __rtems__
-#include "os/rtems/headers/rtems-bsd-fio-gettime-data.h"
-#endif /* __rtems__ */

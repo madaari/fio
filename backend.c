@@ -22,12 +22,6 @@
  *
  */
 
-#ifdef __rtems__
-#include <machine/rtems-bsd-user-space.h>
-#include <machine/rtems-bsd-program.h>
-#include "os/rtems/headers/rtems-bsd-fio-namespace.h"
-#endif /* __rtems__ */
-
 #include <unistd.h>
 #include <string.h>
 #include <signal.h>
@@ -1700,12 +1694,10 @@ static void *thread_main(void *data)
 
 	errno = 0;
 
-#ifndef __rtems__
 	if (nice(o->nice) == -1 && errno != 0) {
 		td_verror(td, errno, "nice");
 		goto err;
 	}
-#endif
 
 	if (o->ioscheduler && switch_ioscheduler(td))
 		goto err;
@@ -2526,6 +2518,3 @@ int fio_backend(struct sk_out *sk_out)
 	stat_exit();
 	return exit_value;
 }
-#ifdef __rtems__
-#include "os/rtems/headers/rtems-bsd-fio-backend-data.h"
-#endif /* __rtems__ */

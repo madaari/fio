@@ -1,9 +1,3 @@
-#ifdef __rtems__
-#include <machine/rtems-bsd-user-space.h>
-#include <machine/rtems-bsd-program.h>
-#include "../os/rtems/headers/rtems-bsd-fio-namespace.h"
-#include "parse.h"
-#endif /* __rtems__ */
 
 #include <math.h>
 #include <string.h>
@@ -101,6 +95,3 @@ void zipf_disable_hash(struct zipf_state *zs)
 {
 	zs->disable_hash = true;
 }
-#ifdef __rtems__
-#include "../os/rtems/headers/rtems-bsd-fio-zipf-data.h"
-#endif /* __rtems__ */
