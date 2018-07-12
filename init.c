@@ -40,7 +40,7 @@
 
 /* RTEMS uses newlib's getopt_long_only_r() */
 #ifdef __rtems__
-#include <getopt.h> 
+#include <getopt.h>
 #else /* __rtems__ */
 #include "oslib/getopt.h"
 #endif /* __rtems__ */
@@ -100,7 +100,7 @@ unsigned int *fio_warned = NULL;
 static char cmd_optstr[256];
 static bool did_arg;
 
-#ifdef __rtems__ 
+#ifdef __rtems__
     struct getopt_data getopt_reent;
 #endif /* __rtems__ */
 
@@ -2452,7 +2452,7 @@ int parse_cmd_line(int argc, char *argv[], int client_type)
 	void *cur_client = NULL;
 	int backend = 0;
 
-#ifdef __rtems__ 
+#ifdef __rtems__
     memset(&getopt_reent, 0, sizeof(getopt_data));
 #endif /* __rtems__ */
 	/*
@@ -2460,7 +2460,7 @@ int parse_cmd_line(int argc, char *argv[], int client_type)
 	 * for the backend.
 	 */
 	optind = 1;
-	while ((c = 
+	while ((c =
 #ifdef __rtems__ /* Using Newlib's reentrant version of getopt */
 		getopt_long_only_r(argc, argv, ostr, l_opts, &lidx, &getopt_reent))!= -1) {
 #else /* __rtems__ */

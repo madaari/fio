@@ -62,7 +62,7 @@ static rtems_status_code
 media_listener(rtems_media_event event, rtems_media_state state,
     const char *src, const char *dest, void *arg)
 {
-	
+
 	if (dest != NULL) {
 		printf(", dest = %s", dest);
 	}
@@ -114,7 +114,7 @@ void
 Init(rtems_task_argument arg)
 {
 	rtems_status_code sc;
-	
+
 	puts("\n*** FIO - Flexible I/O tester ***\n\n");
 
 	early_initialization();

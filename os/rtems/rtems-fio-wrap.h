@@ -29,9 +29,9 @@ mainwrapper(int argc, char *argv[])
 	prio_tree_init();
 	fio_syncio_register_ft();
 	fio_client_hash_init();
-	
+
 	err = main(argc, argv, (char *)NULL);
-	
+
 	/* Destructors */
 	fio_syncio_unregister();
     tiobench_unregister();
@@ -39,16 +39,16 @@ mainwrapper(int argc, char *argv[])
     fio_null_unregister();
     act_unregister();
     fio_syncio_unregister_ft();
-    
+
     return err;
 }
 
 rtems_bsd_command_fio(int argc, char *argv[])
 {
     int exit_code;
-    
+
     exit_code = mainwrapper(argc, argv);
-       
+
     return exit_code;
 }
 #endif /* __rtems__ */
