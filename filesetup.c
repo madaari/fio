@@ -1353,7 +1353,6 @@ void close_and_free_files(struct thread_data *td)
 			free(f->file_name);
 		else
 			sfree(f->file_name);
-
 		f->file_name = NULL;
 		if (fio_file_axmap(f)) {
 			axmap_free(f->io_axmap);

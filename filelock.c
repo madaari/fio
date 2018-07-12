@@ -3,7 +3,6 @@
  * No hash indexing, just a list, so only works well for < 100 files or
  * so. But that's more than what fio needs, so should be fine.
  */
-
 #include <inttypes.h>
 #include <string.h>
 #include <unistd.h>

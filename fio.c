@@ -63,10 +63,8 @@ done_key:
 	fio_server_destroy_sk_key();
 done:
 	deinitialize_fio();
-
 	return ret;
 }
-
 #ifdef __rtems__
 #include <os/rtems/rtems-fio-wrap.h>
 #endif /* __rtems__ */

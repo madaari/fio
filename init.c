@@ -1768,8 +1768,8 @@ void add_job_opts(const char **o, int client_type)
 	while (o[i]) {
 		if (!strncmp(o[i], "name", 4)) {
 			in_global = 0;
-			if (td){
-				add_job(td, jobname, 0, 0, client_type);}
+			if (td)
+				add_job(td, jobname, 0, 0, client_type);
 			td = NULL;
 			sprintf(jobname, "%s", o[i] + 5);
 		}
