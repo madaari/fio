@@ -57,8 +57,7 @@ struct split {
 };
 
 static int split_parse_ddir(struct thread_options *o, struct split *split,
-			    enum fio_ddir ddir, char *str, bool absolute,
-			    unsigned int max_splits)
+			    char *str, bool absolute, unsigned int max_splits)
 {
 	unsigned long long perc;
 	unsigned int i;
@@ -125,7 +124,7 @@ static int bssplit_ddir(struct thread_options *o, enum fio_ddir ddir, char *str,
 
 	memset(&split, 0, sizeof(split));
 
-	if (split_parse_ddir(o, &split, ddir, str, data, BSSPLIT_MAX))
+	if (split_parse_ddir(o, &split, str, data, BSSPLIT_MAX))
 		return 1;
 	if (!split.nr)
 		return 0;
@@ -882,7 +881,7 @@ static int zone_split_ddir(struct thread_options *o, enum fio_ddir ddir,
 
 	memset(&split, 0, sizeof(split));
 
-	if (split_parse_ddir(o, &split, ddir, str, absolute, ZONESPLIT_MAX))
+	if (split_parse_ddir(o, &split, str, absolute, ZONESPLIT_MAX))
 		return 1;
 	if (!split.nr)
 		return 0;
@@ -1047,8 +1046,6 @@ static int parse_zoned_distribution(struct thread_data *td, const char *input,
 	}
 
 	if (parse_dryrun()) {
-		int i;
-
 		for (i = 0; i < DDIR_RWDIR_CNT; i++) {
 			free(td->o.zone_split[i]);
 			td->o.zone_split[i] = NULL;
@@ -1558,9 +1555,9 @@ static int rw_verify(const struct fio_option *o, void *data)
 {
 	struct thread_data *td = cb_data_to_td(data);
 
-	if (read_only && td_write(td)) {
-		log_err("fio: job <%s> has write bit set, but fio is in"
-			" read-only mode\n", td->o.name);
+	if (read_only && (td_write(td) || td_trim(td))) {
+		log_err("fio: job <%s> has write or trim bit set, but"
+			" fio is in read-only mode\n", td->o.name);
 		return 1;
 	}
 
@@ -4798,7 +4795,7 @@ static char *bc_calc(char *str)
  * substitution always occurs, even if VARNAME is empty or the corresponding
  * environment variable undefined.
  */
-static char *option_dup_subs(const char *opt)
+char *fio_option_dup_subs(const char *opt)
 {
 	char out[OPT_LEN_MAX+1];
 	char in[OPT_LEN_MAX+1];
@@ -4903,7 +4900,7 @@ static char **dup_and_sub_options(char **opts, int num_opts)
 	int i;
 	char **opts_copy = malloc(num_opts * sizeof(*opts));
 	for (i = 0; i < num_opts; i++) {
-		opts_copy[i] = option_dup_subs(opts[i]);
+		opts_copy[i] = fio_option_dup_subs(opts[i]);
 		if (!opts_copy[i])
 			continue;
 		opts_copy[i] = fio_keyword_replace(opts_copy[i]);
@@ -5167,8 +5164,7 @@ struct fio_option *fio_option_find(const char *name)
 	return find_option(fio_options, name);
 }
 
-static struct fio_option *find_next_opt(struct thread_options *o,
-					struct fio_option *from,
+static struct fio_option *find_next_opt(struct fio_option *from,
 					unsigned int off1)
 {
 	struct fio_option *opt;
@@ -5205,7 +5201,7 @@ bool __fio_option_is_set(struct thread_options *o, unsigned int off1)
 	struct fio_option *opt, *next;
 
 	next = NULL;
-	while ((opt = find_next_opt(o, next, off1)) != NULL) {
+	while ((opt = find_next_opt(next, off1)) != NULL) {
 		if (opt_is_set(o, opt))
 			return true;
 

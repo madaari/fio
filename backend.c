@@ -50,7 +50,7 @@
 
 static struct fio_sem *startup_sem;
 static struct flist_head *cgroup_list;
-static char *cgroup_mnt;
+static struct cgroup_mnt *cgroup_mnt;
 static int exit_value;
 static volatile int fio_abort;
 static unsigned int nr_process = 0;
@@ -432,9 +432,7 @@ static int wait_for_completions(struct thread_data *td, struct timespec *time)
 	if ((full && !min_evts) || !td->o.iodepth_batch_complete_min)
 		min_evts = 1;
 
-	if (time && (__should_check_rate(td, DDIR_READ) ||
-	    __should_check_rate(td, DDIR_WRITE) ||
-	    __should_check_rate(td, DDIR_TRIM)))
+	if (time && __should_check_rate(td))
 		fio_gettime(time, NULL);
 
 	do {
@@ -463,7 +461,7 @@ int io_queue_event(struct thread_data *td, struct io_u *io_u, int *ret,
 				*bytes_issued += bytes;
 
 			if (!from_verify)
-				trim_io_piece(td, io_u);
+				trim_io_piece(io_u);
 
 			/*
 			 * zero read, fail
@@ -489,9 +487,7 @@ int io_queue_event(struct thread_data *td, struct io_u *io_u, int *ret,
 			requeue_io_u(td, &io_u);
 		} else {
 sync_done:
-			if (comp_time && (__should_check_rate(td, DDIR_READ) ||
-			    __should_check_rate(td, DDIR_WRITE) ||
-			    __should_check_rate(td, DDIR_TRIM)))
+			if (comp_time && __should_check_rate(td))
 				fio_gettime(comp_time, NULL);
 
 			*ret = io_u_sync_complete(td, io_u);
@@ -892,6 +888,8 @@ static void handle_thinktime(struct thread_data *td, enum fio_ddir ddir)
 			over = (usperop - total) / usperop * -bs;
 
 		td->rate_io_issue_bytes[ddir] += (missed - over);
+		/* adjust for rate_process=poisson */
+		td->last_usec[ddir] += total;
 	}
 }
 
@@ -1036,7 +1034,7 @@ static void do_io(struct thread_data *td, uint64_t *bytes_done)
 
 		if (td->o.io_submit_mode == IO_MODE_OFFLOAD) {
 			const unsigned long blen = io_u->xfer_buflen;
-			const enum fio_ddir ddir = acct_ddir(io_u);
+			const enum fio_ddir __ddir = acct_ddir(io_u);
 
 			if (td->error)
 				break;
@@ -1044,14 +1042,14 @@ static void do_io(struct thread_data *td, uint64_t *bytes_done)
 			workqueue_enqueue(&td->io_wq, &io_u->work);
 			ret = FIO_Q_QUEUED;
 
-			if (ddir_rw(ddir)) {
-				td->io_issues[ddir]++;
-				td->io_issue_bytes[ddir] += blen;
-				td->rate_io_issue_bytes[ddir] += blen;
+			if (ddir_rw(__ddir)) {
+				td->io_issues[__ddir]++;
+				td->io_issue_bytes[__ddir] += blen;
+				td->rate_io_issue_bytes[__ddir] += blen;
 			}
 
 			if (should_check_rate(td))
-				td->rate_next_io_time[ddir] = usec_for_io(td, ddir);
+				td->rate_next_io_time[__ddir] = usec_for_io(td, __ddir);
 
 		} else {
 			ret = io_u_submit(td, io_u);
@@ -1531,7 +1529,7 @@ static void *thread_main(void *data)
 	} else
 		td->pid = gettid();
 
-	fio_local_clock_init(o->use_thread);
+	fio_local_clock_init();
 
 	dprint(FD_PROCESS, "jobs pid=%d started\n", (int) td->pid);
 
@@ -1888,7 +1886,7 @@ err:
 	close_and_free_files(td);
 	cleanup_io_u(td);
 	close_ioengine(td);
-	cgroup_shutdown(td, &cgroup_mnt);
+	cgroup_shutdown(td, cgroup_mnt);
 	verify_free_state(td);
 
 	if (td->zone_state_index) {
@@ -2510,7 +2508,6 @@ int fio_backend(struct sk_out *sk_out)
 		cgroup_kill(cgroup_list);
 		sfree(cgroup_list);
 	}
-	sfree(cgroup_mnt);
 
 	fio_sem_remove(startup_sem);
 	stat_exit();

@@ -168,7 +168,7 @@ bail:
 	/*
 	 * Generate a value, v, between 1 and 100, both inclusive
 	 */
-	v = rand32_between(&td->zone_state, 1, 100);
+	v = rand_between(&td->zone_state, 1, 100);
 
 	/*
 	 * Find our generated table. 'send' is the end block of this zone,
@@ -225,7 +225,7 @@ bail:
 	/*
 	 * Generate a value, v, between 1 and 100, both inclusive
 	 */
-	v = rand32_between(&td->zone_state, 1, 100);
+	v = rand_between(&td->zone_state, 1, 100);
 
 	zsi = &td->zone_state_index[ddir][v - 1];
 	stotal = zsi->size_perc_prev;
@@ -300,7 +300,7 @@ static bool should_do_random(struct thread_data *td, enum fio_ddir ddir)
 	if (td->o.perc_rand[ddir] == 100)
 		return true;
 
-	v = rand32_between(&td->seq_rand_state[ddir], 1, 100);
+	v = rand_between(&td->seq_rand_state[ddir], 1, 100);
 
 	return v <= td->o.perc_rand[ddir];
 }
@@ -325,9 +325,9 @@ static int get_next_rand_block(struct thread_data *td, struct fio_file *f,
 	if (td->o.time_based ||
 	    (td->o.file_service_type & __FIO_FSERVICE_NONUNIFORM)) {
 		fio_file_reset(td, f);
+		loop_cache_invalidate(td, f);
 		if (!get_next_rand_offset(td, f, ddir, b))
 			return 0;
-		loop_cache_invalidate(td, f);
 	}
 
 	dprint(FD_IO, "%s: rand offset failed, last=%llu, size=%llu\n",
@@ -541,10 +541,8 @@ static unsigned int get_next_buflen(struct thread_data *td, struct io_u *io_u,
 		r = __rand(&td->bsrange_state[ddir]);
 
 		if (!td->o.bssplit_nr[ddir]) {
-			buflen = 1 + (unsigned int) ((double) maxbs *
+			buflen = minbs + (unsigned int) ((double) maxbs *
 					(r / (frand_max + 1.0)));
-			if (buflen < minbs)
-				buflen = minbs;
 		} else {
 			long long perc = 0;
 			unsigned int i;
@@ -589,7 +587,7 @@ static inline enum fio_ddir get_rand_ddir(struct thread_data *td)
 {
 	unsigned int v;
 
-	v = rand32_between(&td->rwmix_state, 1, 100);
+	v = rand_between(&td->rwmix_state, 1, 100);
 
 	if (v <= td->o.rwmix[DDIR_READ])
 		return DDIR_READ;
@@ -832,15 +830,16 @@ static void __fill_io_u_zone(struct thread_data *td, struct io_u *io_u)
 		 * Wrap from the beginning, if we exceed the file size
 		 */
 		if (f->file_offset >= f->real_file_size)
-			f->file_offset = f->real_file_size - f->file_offset;
+			f->file_offset = get_start_offset(td, f);
+
 		f->last_pos[io_u->ddir] = f->file_offset;
 		td->io_skip_bytes += td->o.zone_skip;
 	}
 
 	/*
- 	 * If zone_size > zone_range, then maintain the same zone until
- 	 * zone_bytes >= zone_size.
- 	 */
+	 * If zone_size > zone_range, then maintain the same zone until
+	 * zone_bytes >= zone_size.
+	 */
 	if (f->last_pos[io_u->ddir] >= (f->file_offset + td->o.zone_range)) {
 		dprint(FD_IO, "io_u maintain zone offset=%" PRIu64 "/last_pos=%" PRIu64 "\n",
 				f->file_offset, f->last_pos[io_u->ddir]);
@@ -851,9 +850,8 @@ static void __fill_io_u_zone(struct thread_data *td, struct io_u *io_u)
 	 * For random: if 'norandommap' is not set and zone_size > zone_range,
 	 * map needs to be reset as it's done with zone_range everytime.
 	 */
-	if ((td->zone_bytes % td->o.zone_range) == 0) {
+	if ((td->zone_bytes % td->o.zone_range) == 0)
 		fio_file_reset(td, f);
-	}
 }
 
 static int fill_io_u(struct thread_data *td, struct io_u *io_u)
@@ -874,9 +872,8 @@ static int fill_io_u(struct thread_data *td, struct io_u *io_u)
 	/*
 	 * When file is zoned zone_range is always positive
 	 */
-	if (td->o.zone_range) {
+	if (td->o.zone_range)
 		__fill_io_u_zone(td, io_u);
-	}
 
 	/*
 	 * No log, let the seq/rand engine retrieve the next buflen and
@@ -2069,7 +2066,7 @@ static struct frand_state *get_buf_state(struct thread_data *td)
 		return &td->buf_state;
 	}
 
-	v = rand32_between(&td->dedupe_state, 1, 100);
+	v = rand_between(&td->dedupe_state, 1, 100);
 
 	if (v <= td->o.dedupe_percentage)
 		return &td->buf_state_prev;
