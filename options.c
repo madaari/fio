@@ -4784,8 +4784,7 @@ static char *bc_calc(char *str)
 	return strdup(buf);
 #else /* __rtems__ */
 	log_err("fio: performing math is not supported\n");
-	printf("fio: performing math is not supported\n");
-	return ' ';
+	return NULL;
 #endif /* __rtems__ */
 }
 

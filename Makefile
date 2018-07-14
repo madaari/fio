@@ -200,13 +200,13 @@ ifeq ($(CONFIG_TARGET_OS), RTEMS)
   CFLAGS  += -I $(TOOL_PATH_PREFIX)/arm-rtems5/beagleboneblack/lib/include -ffunction-sections -fdata-sections -g -mcpu=cortex-a8 -fno-strict-aliasing -ffreestanding -fno-common -w -DHAVE_RTEMS_SCORE_CPUOPTS_H=1 -DHAVE_RTEMS_H=1 -DHAVE_DLFCN_H=1 -DHAVE_RTEMS_PCI_H=1 -DHAVE_RTEMS_RTEMS_DEBUGGER_H=1
 endif
 
+OBJS := $(SOURCE:.c=.o)
+
 FIO_OBJS = $(OBJS) fio.o
 
 ifeq ($(CONFIG_TARGET_OS), RTEMS)
   FIO_OBJS +=  os/rtems/rtems-init.o
 endif
-
-OBJS := $(SOURCE:.c=.o)
 
 GFIO_OBJS = $(OBJS) gfio.o graph.o tickmarks.o ghelpers.o goptions.o gerror.o \
 			gclient.o gcompat.o cairo_text_helpers.o printing.o
