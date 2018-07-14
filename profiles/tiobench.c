@@ -131,6 +131,7 @@ tiobench_register(void)
 	if (register_profile(&tiobench_profile))
 		log_err("fio: failed to register profile 'tiobench'\n");
 }
+
 #ifdef __rtems__
 void
 #else /* __rtems__ */
