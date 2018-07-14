@@ -1,4 +1,5 @@
-#ifdef __rtems__
+/* RTEMS specific wrapper for explicitly calling constructors and
+ * destructors */
 
 void act_register(void);
 void tiobench_register(void);
@@ -18,9 +19,9 @@ void fio_syncio_unregister_ft(void);
 static int
 mainwrapper(int argc, char *argv[])
 {
-    int err=0;
+	int err=0;
 
-    /* Constructors */
+	/* Constructors */
 	act_register();
 	tiobench_register();
 	fio_syncio_register();
@@ -34,21 +35,20 @@ mainwrapper(int argc, char *argv[])
 
 	/* Destructors */
 	fio_syncio_unregister();
-    tiobench_unregister();
-    fio_filecreate_unregister();
-    fio_null_unregister();
-    act_unregister();
-    fio_syncio_unregister_ft();
+	tiobench_unregister();
+	fio_filecreate_unregister();
+	fio_null_unregister();
+	act_unregister();
+	fio_syncio_unregister_ft();
 
-    return err;
+	return err;
 }
 
 rtems_bsd_command_fio(int argc, char *argv[])
 {
-    int exit_code;
+	int exit_code;
 
-    exit_code = mainwrapper(argc, argv);
+	exit_code = mainwrapper(argc, argv);
 
-    return exit_code;
+	return exit_code;
 }
-#endif /* __rtems__ */

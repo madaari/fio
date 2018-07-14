@@ -1,6 +1,5 @@
 /*-
  * Copyright (c) 2018 Udit kumar agarwal <dev.madaari@gmail.com>
- * Copyright (c) 2018 Christian Mauderer <christian.mauderer@embedded-brains.de>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -64,7 +63,7 @@ static inline int blockdev_size(struct fio_file *f, unsigned long long *bytes)
 
 static inline unsigned long long os_phys_mem(void)
 {
-    errno = ENOSYS;
+	errno = ENOSYS;
 	return 0;
 }
 

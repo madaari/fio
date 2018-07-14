@@ -136,17 +136,12 @@ static void *worker_thread(void *data)
 
 	sk_out_assign(sw->sk_out);
 
-#ifndef __rtems__
 	if (wq->ops.nice) {
 		if (nice(wq->ops.nice) < 0) {
 			log_err("workqueue: nice %s\n", strerror(errno));
 			ret = 1;
 		}
 	}
-#else /* __rtems__ */
-	log_err("workqueue: nice %s\n", strerror(errno));
-	ret = 1;
-#endif /* __rtems__*/
 	if (!ret)
 		ret = workqueue_init_worker(sw);
 
