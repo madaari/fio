@@ -8,11 +8,7 @@
 #include <string.h>
 #include <errno.h>
 #include <sys/types.h>
-#ifndef __rtems__
 #include <dlfcn.h>
-#else /* __rtems__ */
-#include "dlfcn.h"
-#endif /* __rtems__ */
 #ifdef CONFIG_VALGRIND_DEV
 #include <valgrind/drd.h>
 #else
