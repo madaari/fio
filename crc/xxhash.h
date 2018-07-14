@@ -107,16 +107,9 @@ XXH32() :
 // Advanced Hash Functions
 //****************************
 
-/* Unlike most desktop OS, In Newlib unsigned int and uint32_t are different */
-#ifndef __rtems__
-void*         XXH32_init   (unsigned int seed);
-XXH_errorcode XXH32_update (void* state, const void* input, int len);
-unsigned int  XXH32_digest (void* state);
-#else /* __rtems__ */
 void*         XXH32_init   (uint32_t seed);
 XXH_errorcode XXH32_update (void* state, const void* input, int len);
 uint32_t  XXH32_digest (void* state);
-#endif /* __rtems__ */
 
 /*
 These functions calculate the xxhash of an input provided in several small packets,
@@ -142,11 +135,7 @@ Memory will be freed by XXH32_digest().
 
 
 int           XXH32_sizeofState(void);
-#ifndef __rtems__
-XXH_errorcode XXH32_resetState(void* state, unsigned int seed);
-#else /* __rtems__ */
 XXH_errorcode XXH32_resetState(void* state, uint32_t seed);
-#endif /* __rtems__ */
 
 #define       XXH32_SIZEOFSTATE 48
 typedef struct { long long ll[(XXH32_SIZEOFSTATE+(sizeof(long long)-1))/sizeof(long long)]; } XXH32_stateSpace_t;
@@ -162,11 +151,7 @@ use the structure XXH32_stateSpace_t, which will ensure that memory space is lar
 */
 
 
-#ifndef __rtems__
-unsigned int XXH32_intermediateDigest (void* state);
-#else /* __rtems__ */
 uint32_t XXH32_intermediateDigest (void* state);
-#endif /* __rtems__ */
 /*
 This function does the same as XXH32_digest(), generating a 32-bit hash,
 but preserve memory context.
