@@ -142,6 +142,7 @@ static void *worker_thread(void *data)
 			ret = 1;
 		}
 	}
+
 	if (!ret)
 		ret = workqueue_init_worker(sw);
 

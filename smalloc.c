@@ -192,6 +192,7 @@ static bool add_pool(struct pool *pool, unsigned int alloc_size)
 	pool->map = ptr;
 	pool->bitmap = (unsigned int *)((char *) ptr + (pool->nr_blocks * SMALLOC_BPL));
 	memset(pool->bitmap, 0, bitmap_blocks * sizeof(unsigned int));
+
 	pool->lock = fio_sem_init(FIO_SEM_UNLOCKED);
 	if (!pool->lock)
 		goto out_fail;
