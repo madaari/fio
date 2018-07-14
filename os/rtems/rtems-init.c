@@ -75,16 +75,16 @@ media_listener(rtems_media_event event, rtems_media_state state,
 }
 
 rtems_shell_cmd_t rtems_shell_fio_Command = {
-    .name = "fio",
-    .usage = "fio --help",
-    .topic = "user",
-    .command = rtems_bsd_command_fio
+	.name = "fio",
+	.usage = "fio testfile.fio",
+	.topic = "user",
+	.command = rtems_bsd_command_fio
 };
 
 int nice(int incr)
 {
-    /* FIXME */
-    return 0;
+	/* FIXME */
+	return 0;
 }
 
 static void
@@ -125,7 +125,7 @@ Init(rtems_task_argument arg)
 	assert(sc == RTEMS_SUCCESSFUL);
 
 	sc = rtems_shell_init("SHLL", 16 * 1024, 1, CONSOLE_DEVICE_NAME,
-	    false, true, NULL);
+		false, true, NULL);
 	assert(sc == RTEMS_SUCCESSFUL);
 
 	assert(0);
@@ -169,8 +169,6 @@ Init(rtems_task_argument arg)
 #define CONFIGURE_UNLIMITED_OBJECTS
 #define CONFIGURE_UNIFIED_WORK_AREAS
 
-#define CONFIGURE_STACK_CHECKER_ENABLED
-
 /* Turn cache off */
 #define CONFIGURE_BDBUF_BUFFER_MAX_SIZE (4 * 1024)
 #define CONFIGURE_BDBUF_MAX_READ_AHEAD_BLOCKS 0
@@ -190,25 +188,10 @@ Init(rtems_task_argument arg)
 
 #include <bsp/irq-info.h>
 
-#include <rtems/netcmds-config.h>
-
 #define CONFIGURE_SHELL_USER_COMMANDS \
-  &bsp_interrupt_shell_command, \
-  &rtems_shell_ARP_Command, \
-  &rtems_shell_HOSTNAME_Command, \
-  &rtems_shell_PING_Command, \
-  &rtems_shell_ROUTE_Command, \
-  &rtems_shell_NETSTAT_Command, \
-  &rtems_shell_IFCONFIG_Command, \
-  &rtems_shell_TCPDUMP_Command, \
-  &rtems_shell_SYSCTL_Command, \
-  &rtems_shell_VMSTAT_Command, \
   &rtems_shell_fio_Command
 
 #define CONFIGURE_SHELL_COMMAND_CPUINFO
-#define CONFIGURE_SHELL_COMMAND_CPUUSE
-#define CONFIGURE_SHELL_COMMAND_PERIODUSE
-#define CONFIGURE_SHELL_COMMAND_STACKUSE
 #define CONFIGURE_SHELL_COMMAND_PROFREPORT
 #define CONFIGURE_SHELL_COMMAND_MKRFS
 
