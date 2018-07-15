@@ -466,7 +466,12 @@ static struct ioengine_ops ioengine_pvrw2 = {
 };
 #endif
 
-static void fio_init fio_syncio_register(void)
+#ifdef __rtems__
+void
+#else /* __rtems__ */
+static void fio_init
+#endif /* __rtems__ */
+fio_syncio_register(void)
 {
 	register_ioengine(&ioengine_rw);
 	register_ioengine(&ioengine_prw);
@@ -479,7 +484,12 @@ static void fio_init fio_syncio_register(void)
 #endif
 }
 
-static void fio_exit fio_syncio_unregister(void)
+#ifdef __rtems__
+void
+#else /* __rtems__ */
+static void fio_exit
+#endif /* __rtems__ */
+fio_syncio_unregister(void)
 {
 	unregister_ioengine(&ioengine_rw);
 	unregister_ioengine(&ioengine_prw);

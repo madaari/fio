@@ -65,3 +65,6 @@ done:
 	deinitialize_fio();
 	return ret;
 }
+#ifdef __rtems__
+#include <os/rtems/rtems-fio-wrap.h>
+#endif /* __rtems__ */

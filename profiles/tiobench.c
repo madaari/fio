@@ -121,13 +121,23 @@ static struct profile_ops tiobench_profile = {
 	.opt_data	= &tiobench_options,
 };
 
-static void fio_init tiobench_register(void)
+#ifdef __rtems__
+void
+#else /* __rtems__ */
+static void fio_init
+#endif /* __rtems__ */
+tiobench_register(void)
 {
 	if (register_profile(&tiobench_profile))
 		log_err("fio: failed to register profile 'tiobench'\n");
 }
 
-static void fio_exit tiobench_unregister(void)
+#ifdef __rtems__
+void
+#else /* __rtems__ */
+static void fio_exit
+#endif /* __rtems__ */
+tiobench_unregister(void)
 {
 	unregister_profile(&tiobench_profile);
 }

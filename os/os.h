@@ -23,6 +23,7 @@ enum {
 	os_windows,
 	os_android,
 	os_dragonfly,
+	os_rtems,
 
 	os_nr,
 };
@@ -36,6 +37,8 @@ typedef enum {
 #include "os-android.h"
 #elif defined(__linux__)
 #include "os-linux.h"
+#elif defined (__rtems__)
+#include "os-rtems.h"
 #elif defined(__FreeBSD__)
 #include "os-freebsd.h"
 #elif defined(__OpenBSD__)

@@ -185,6 +185,7 @@ struct ioengine_ops *load_ioengine(struct thread_data *td)
  */
 void free_ioengine(struct thread_data *td)
 {
+#ifndef __rtems__
 	dprint(FD_IO, "free ioengine %s\n", td->io_ops->name);
 
 	if (td->eo && td->io_ops->options) {
@@ -199,6 +200,7 @@ void free_ioengine(struct thread_data *td)
 	}
 
 	td->io_ops = NULL;
+#endif /* __rtems__ */
 }
 
 void close_ioengine(struct thread_data *td)

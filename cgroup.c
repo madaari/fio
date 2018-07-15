@@ -224,7 +224,12 @@ out:
 	sfree(mnt);
 }
 
-static void fio_init cgroup_init(void)
+#ifdef __rtems__
+void
+#else /* __rtems__ */
+static void fio_init
+#endif /* __rtems__ */
+cgroup_init(void)
 {
 	lock = fio_sem_init(FIO_SEM_UNLOCKED);
 	if (!lock)

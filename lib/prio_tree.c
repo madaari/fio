@@ -53,7 +53,12 @@ static void get_index(const struct prio_tree_node *node,
 
 static unsigned long index_bits_to_maxindex[BITS_PER_LONG];
 
-static void fio_init prio_tree_init(void)
+#ifdef __rtems__
+void
+#else /* __rtems__ */
+static void fio_init
+#endif /* __rtems__ */
+prio_tree_init(void)
 {
 	unsigned int i;
 

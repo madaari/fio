@@ -170,12 +170,17 @@ static bool add_pool(struct pool *pool, unsigned int alloc_size)
 	pool->free_blocks = bitmap_blocks * SMALLOC_BPB;
 
 	mmap_flags = OS_MAP_ANON;
-#ifdef CONFIG_ESX
+#if defined(CONFIG_ESX)||defined(__rtems__)
 	mmap_flags |= MAP_PRIVATE;
 #else
 	mmap_flags |= MAP_SHARED;
 #endif
+
+#ifdef __rtems__
+	ptr = (void*)malloc(alloc_size);
+#else
 	ptr = mmap(NULL, alloc_size, PROT_READ|PROT_WRITE, mmap_flags, -1, 0);
+#endif
 
 	if (ptr == MAP_FAILED)
 		goto out_fail;
@@ -193,7 +198,11 @@ static bool add_pool(struct pool *pool, unsigned int alloc_size)
 out_fail:
 	log_err("smalloc: failed adding pool\n");
 	if (pool->map)
+#ifdef __rtems__
+		free(pool->map);
+#else /* __rtems__ */
 		munmap(pool->map, pool->mmap_size);
+#endif /* __rtems__ */
 	return false;
 }
 

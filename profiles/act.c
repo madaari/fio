@@ -461,7 +461,12 @@ static struct profile_ops act_profile = {
 	.io_ops		= &act_io_ops,
 };
 
-static void fio_init act_register(void)
+#ifdef __rtems__
+void
+#else /* __rtems__ */
+static void fio_init
+#endif /* __rtems__ */
+act_register(void)
 {
 	act_run_data = calloc(1, sizeof(*act_run_data));
 	act_run_data->sem = fio_sem_init(FIO_SEM_UNLOCKED);
@@ -470,7 +475,12 @@ static void fio_init act_register(void)
 		log_err("fio: failed to register profile 'act'\n");
 }
 
-static void fio_exit act_unregister(void)
+#ifdef __rtems__
+void
+#else /* __rtems__ */
+static void fio_exit
+#endif /* __rtems__ */
+act_unregister(void)
 {
 	while (org_idx && org_idx < opt_idx)
 		free((void *) act_opts[++org_idx]);

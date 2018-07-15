@@ -177,7 +177,12 @@ static struct ioengine_ops ioengine = {
 	.flags = FIO_DISKLESSIO,
 };
 
-static void fio_init fio_gf_register(void)
+#ifdef __rtems__
+void
+#else /* __rtems__ */
+static void fio_init
+#endif /* __rtems__ */
+fio_gf_register(void)
 {
 	register_ioengine(&ioengine);
 }

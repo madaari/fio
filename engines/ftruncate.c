@@ -41,12 +41,22 @@ static struct ioengine_ops ioengine = {
 	.flags		= FIO_SYNCIO | FIO_FAKEIO
 };
 
-static void fio_init fio_syncio_register(void)
+#ifdef __rtems__
+void
+#else /* __rtems__ */
+static void fio_init
+#endif /* __rtems__ */
+fio_syncio_register(void)
 {
 	register_ioengine(&ioengine);
 }
 
-static void fio_exit fio_syncio_unregister(void)
+#ifdef __rtems__
+void
+#else /* __rtems__ */
+static void fio_exit
+#endif /* __rtems__ */
+fio_syncio_unregister(void)
 {
 	unregister_ioengine(&ioengine);
 }
