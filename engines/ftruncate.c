@@ -42,19 +42,21 @@ static struct ioengine_ops ioengine = {
 };
 
 #ifdef __rtems__
-void fio_syncio_register_ft(void)
+void
 #else /* __rtems__ */
-static void fio_init fio_syncio_register(void)
+static void fio_init
 #endif /* __rtems__ */
+fio_syncio_register(void)
 {
 	register_ioengine(&ioengine);
 }
 
 #ifdef __rtems__
-void fio_syncio_unregister_ft(void)
+void
 #else /* __rtems__ */
-static void fio_exit fio_syncio_unregister(void)
+static void fio_exit
 #endif /* __rtems__ */
+fio_syncio_unregister(void)
 {
 	unregister_ioengine(&ioengine);
 }
