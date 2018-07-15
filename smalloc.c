@@ -19,11 +19,7 @@
 #define SMALLOC_BPL	(SMALLOC_BPB * SMALLOC_BPI)
 
 #define INITIAL_SIZE	16*1024*1024	/* new pool size */
-#ifndef __rtems__
 #define INITIAL_POOLS	8		/* maximum number of pools to setup */
-#else /* __rtems__ */
-#define INITIAL_POOLS	2		/* maximum number of pools to setup */
-#endif /* __rtems__ */
 
 #define MAX_POOLS	16
 
