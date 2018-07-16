@@ -58,7 +58,7 @@ struct fio_sem *fio_sem_init(int value)
 
 	sem = (void *) mmap(NULL, sizeof(struct fio_sem),
 				PROT_READ | PROT_WRITE,
-				OS_MAP_ANON | MAP_SHARED, -1, 0);
+				OS_MAP_ANON | FIO_MAP_TYPE, -1, 0);
 	if (sem == MAP_FAILED) {
 		perror("mmap semaphore");
 		return NULL;

@@ -466,7 +466,7 @@ static struct ioengine_ops ioengine_pvrw2 = {
 };
 #endif
 
-static void fio_init fio_syncio_register(void)
+void fio_init fio_syncio_register(void)
 {
 	register_ioengine(&ioengine_rw);
 	register_ioengine(&ioengine_prw);
@@ -479,7 +479,7 @@ static void fio_init fio_syncio_register(void)
 #endif
 }
 
-static void fio_exit fio_syncio_unregister(void)
+void fio_exit fio_syncio_unregister(void)
 {
 	unregister_ioengine(&ioengine_rw);
 	unregister_ioengine(&ioengine_prw);

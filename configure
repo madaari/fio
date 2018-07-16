@@ -262,6 +262,8 @@ elif check_define __sun__ ; then
   CFLAGS="$CFLAGS -D_REENTRANT"
 elif check_define _WIN32 ; then
   targetos='CYGWIN'
+elif check_define __rtems__ ; then
+  targetos='RTEMS'
 else
   targetos=`uname -s`
 fi
@@ -361,6 +363,10 @@ CYGWIN*)
   sched_idle="yes"
   tcp_nodelay="yes"
   ipv6="yes"
+  ;;
+RTEMS)
+  inet_aton="yes"
+  output_sym "CONFIG_NO_FIO_INIT"
   ;;
 esac
 

@@ -224,14 +224,14 @@ out:
 	sfree(mnt);
 }
 
-static void fio_init cgroup_init(void)
+void fio_init cgroup_init(void)
 {
 	lock = fio_sem_init(FIO_SEM_UNLOCKED);
 	if (!lock)
 		log_err("fio: failed to allocate cgroup lock\n");
 }
 
-static void fio_exit cgroup_exit(void)
+void fio_exit cgroup_exit(void)
 {
 	fio_sem_remove(lock);
 }

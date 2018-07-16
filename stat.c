@@ -38,10 +38,16 @@ void update_rusage_stat(struct thread_data *td)
 					&td->ru_end.ru_utime);
 	ts->sys_time += mtime_since_tv(&td->ru_start.ru_stime,
 					&td->ru_end.ru_stime);
+#ifndef FIO_NO_VIRTUAL_MEMORY
 	ts->ctx += td->ru_end.ru_nvcsw + td->ru_end.ru_nivcsw
 			- (td->ru_start.ru_nvcsw + td->ru_start.ru_nivcsw);
 	ts->minf += td->ru_end.ru_minflt - td->ru_start.ru_minflt;
 	ts->majf += td->ru_end.ru_majflt - td->ru_start.ru_majflt;
+#else /* FIO_NO_VIRTUAL_MEMORY */
+	ts->ctx  = ((uint64_t) -1);
+	ts->minf = ((uint64_t) -1);
+	ts->majf = ((uint64_t) -1);
+#endif /* FIO_NO_VIRTUAL_MEMORY */
 
 	memcpy(&td->ru_start, &td->ru_end, sizeof(td->ru_end));
 }

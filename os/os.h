@@ -23,6 +23,7 @@ enum {
 	os_windows,
 	os_android,
 	os_dragonfly,
+	os_rtems,
 
 	os_nr,
 };
@@ -36,6 +37,8 @@ typedef enum {
 #include "os-android.h"
 #elif defined(__linux__)
 #include "os-linux.h"
+#elif defined (__rtems__)
+#include "os-rtems.h"
 #elif defined(__FreeBSD__)
 #include "os-freebsd.h"
 #elif defined(__OpenBSD__)
@@ -114,6 +117,12 @@ extern int fio_cpus_split(os_cpu_mask_t *mask, unsigned int cpu);
 
 #ifndef FIO_HAVE_IOPRIO
 #define ioprio_set(which, who, prioclass, prio)	(0)
+#endif
+
+#ifdef FIO_NO_SHARED_MAP
+#define FIO_MAP_TYPE MAP_PRIVATE
+#else
+#define FIO_MAP_TYPE MAP_SHARED
 #endif
 
 #ifndef FIO_HAVE_ODIRECT

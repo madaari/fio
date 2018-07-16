@@ -7,7 +7,6 @@
 #include <ctype.h>
 #include <string.h>
 #include <errno.h>
-#include <sys/ipc.h>
 #include <sys/types.h>
 #include <dlfcn.h>
 #ifdef CONFIG_VALGRIND_DEV
@@ -21,6 +20,10 @@
 #include <sys/shm.h>
 #endif
 
+#ifndef __rtems__
+#include <sys/ipc.h>
+#endif /* __rtems__ */
+
 #include "parse.h"
 #include "smalloc.h"
 #include "filehash.h"
@@ -31,7 +34,13 @@
 #include "filelock.h"
 #include "steadystate.h"
 
+/* RTEMS uses newlib's getopt_long_only_r() */
+#ifdef __rtems__
+#include <getopt.h>
+#else /* __rtems__ */
 #include "oslib/getopt.h"
+#endif /* __rtems__ */
+
 #include "oslib/strcasestr.h"
 
 #include "crc/test.h"
@@ -86,6 +95,10 @@ unsigned int *fio_warned = NULL;
 
 static char cmd_optstr[256];
 static bool did_arg;
+
+#ifdef __rtems__
+    struct getopt_data getopt_reent;
+#endif /* __rtems__ */
 
 #define FIO_CLIENT_FLAG		(1 << 16)
 
@@ -2435,13 +2448,20 @@ int parse_cmd_line(int argc, char *argv[], int client_type)
 	void *cur_client = NULL;
 	int backend = 0;
 
+#ifdef __rtems__
+    memset(&getopt_reent, 0, sizeof(getopt_data));
+#endif /* __rtems__ */
 	/*
 	 * Reset optind handling, since we may call this multiple times
 	 * for the backend.
 	 */
 	optind = 1;
-
-	while ((c = getopt_long_only(argc, argv, ostr, l_opts, &lidx)) != -1) {
+	while ((c =
+#ifdef __rtems__ /* Using Newlib's reentrant version of getopt */
+		getopt_long_only_r(argc, argv, ostr, l_opts, &lidx, &getopt_reent))!= -1) {
+#else /* __rtems__ */
+		getopt_long_only(argc, argv, ostr, l_opts, &lidx))!= -1) {
+#endif /* __rtems__ */
 		if ((c & FIO_CLIENT_FLAG) || client_flag_set(c)) {
 			parse_cmd_client(cur_client, argv[optind - 1]);
 			c &= ~FIO_CLIENT_FLAG;

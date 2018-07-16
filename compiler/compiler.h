@@ -17,8 +17,13 @@
  * Mark unused variables passed to ops functions as unused, to silence gcc
  */
 #define fio_unused	__attribute__((__unused__))
+#ifndef CONFIG_NO_FIO_INIT
 #define fio_init	__attribute__((constructor))
 #define fio_exit	__attribute__((destructor))
+#else /* CONFIG_NO_FIO_INIT */
+#define fio_init
+#define fio_exit
+#endif /* CONFIG_NO_FIO_INIT */
 
 #define fio_unlikely(x)	__builtin_expect(!!(x), 0)
 

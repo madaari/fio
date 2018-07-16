@@ -19,7 +19,11 @@
 #define SMALLOC_BPL	(SMALLOC_BPB * SMALLOC_BPI)
 
 #define INITIAL_SIZE	16*1024*1024	/* new pool size */
+#ifndef FIO_LESS_POOLS
 #define INITIAL_POOLS	8		/* maximum number of pools to setup */
+#else
+#define INITIAL_POOLS	4
+#endif
 
 #define MAX_POOLS	16
 
@@ -175,7 +179,12 @@ static bool add_pool(struct pool *pool, unsigned int alloc_size)
 #else
 	mmap_flags |= MAP_SHARED;
 #endif
+
+#ifdef __rtems__
+	ptr = (void*)malloc(alloc_size);
+#else
 	ptr = mmap(NULL, alloc_size, PROT_READ|PROT_WRITE, mmap_flags, -1, 0);
+#endif
 
 	if (ptr == MAP_FAILED)
 		goto out_fail;
@@ -193,7 +202,11 @@ static bool add_pool(struct pool *pool, unsigned int alloc_size)
 out_fail:
 	log_err("smalloc: failed adding pool\n");
 	if (pool->map)
+#ifdef __rtems__
+		free(pool->map);
+#else /* __rtems__ */
 		munmap(pool->map, pool->mmap_size);
+#endif /* __rtems__ */
 	return false;
 }
 

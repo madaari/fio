@@ -107,12 +107,12 @@ static struct ioengine_ops ioengine = {
 				FIO_NOSTATS | FIO_NOFILEHASH,
 };
 
-static void fio_init fio_filecreate_register(void)
+void fio_init fio_filecreate_register(void)
 {
 	register_ioengine(&ioengine);
 }
 
-static void fio_exit fio_filecreate_unregister(void)
+void fio_exit fio_filecreate_unregister(void)
 {
 	unregister_ioengine(&ioengine);
 }
