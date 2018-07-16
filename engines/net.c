@@ -1451,12 +1451,7 @@ static int str_hostname_cb(void *data, const char *input)
 	return 0;
 }
 
-#ifdef __rtems__
-void
-#else /* __rtems__ */
-static void fio_init
-#endif /* __rtems__ */
-fio_netio_register(void)
+static void fio_init fio_netio_register(void)
 {
 	register_ioengine(&ioengine_rw);
 #ifdef CONFIG_LINUX_SPLICE
@@ -1464,12 +1459,7 @@ fio_netio_register(void)
 #endif
 }
 
-#ifdef __rtems__
-void
-#else /* __rtems__ */
-static void fio_exit
-#endif /* __rtems__ */
-fio_netio_unregister(void)
+static void fio_exit fio_netio_unregister(void)
 {
 	unregister_ioengine(&ioengine_rw);
 #ifdef CONFIG_LINUX_SPLICE
