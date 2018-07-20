@@ -55,6 +55,11 @@
 #include <rtems/dhcpcd.h>
 #include <rtems/console.h>
 #include <rtems/shell.h>
+#include <rtems/dosfs.h>
+#include <rtems/ramdisk.h>
+
+#define RAMDISK_PATH "/dev/rda"
+#define MOUNT_PATH "/mnt"
 
 rtems_bsd_command_fio(int argc, char *argv[]);
 
@@ -114,6 +119,7 @@ void
 Init(rtems_task_argument arg)
 {
 	rtems_status_code sc;
+	int rv;
 
 	puts("\n*** FIO - Flexible I/O tester ***\n\n");
 
@@ -124,6 +130,18 @@ Init(rtems_task_argument arg)
 	sc = rtems_task_wake_after(2);
 	assert(sc == RTEMS_SUCCESSFUL);
 
+	rv = msdos_format(RAMDISK_PATH, NULL);
+	assert(rv == 0);
+
+	rv = mount_and_make_target_path(
+			RAMDISK_PATH,
+			MOUNT_PATH,
+			RTEMS_FILESYSTEM_TYPE_DOSFS,
+			RTEMS_FILESYSTEM_READ_WRITE,
+			NULL
+		);
+	assert(rv == 0);
+
 	sc = rtems_shell_init("SHLL", 16 * 1024, 1, CONSOLE_DEVICE_NAME,
 		false, true, NULL);
 	assert(sc == RTEMS_SUCCESSFUL);
@@ -131,6 +149,11 @@ Init(rtems_task_argument arg)
 	assert(0);
 }
 
+rtems_ramdisk_config rtems_ramdisk_configuration[] ={
+	{ .block_size = 512, .block_num = 131072*1.5 }
+};
+
+size_t rtems_ramdisk_configuration_size = RTEMS_ARRAY_SIZE(rtems_ramdisk_configuration);
 
 #define CONFIGURE_MICROSECONDS_PER_TICK 1000
 
@@ -161,6 +184,8 @@ Init(rtems_task_argument arg)
 #define CONFIGURE_APPLICATION_NEEDS_ZERO_DRIVER
 #define CONFIGURE_APPLICATION_NEEDS_LIBBLOCK
 
+#define CONFIGURE_APPLICATION_EXTRA_DRIVERS RAMDISK_DRIVER_TABLE_ENTRY
+
 #define CONFIGURE_LIBIO_MAXIMUM_FILE_DESCRIPTORS 32
 
 #define CONFIGURE_MAXIMUM_USER_EXTENSIONS 1
@@ -169,6 +194,8 @@ Init(rtems_task_argument arg)
 #define CONFIGURE_UNLIMITED_OBJECTS
 #define CONFIGURE_UNIFIED_WORK_AREAS
 
+#define CONFIGURE_STACK_CHECKER_ENABLED
+
 /* Turn cache off */
 #define CONFIGURE_BDBUF_BUFFER_MAX_SIZE (4 * 1024)
 #define CONFIGURE_BDBUF_MAX_READ_AHEAD_BLOCKS 0
@@ -176,7 +203,7 @@ Init(rtems_task_argument arg)
 
 #define CONFIGURE_RTEMS_INIT_TASKS_TABLE
 
-#define CONFIGURE_INIT_TASK_STACK_SIZE (256 * 1024)
+#define CONFIGURE_INIT_TASK_STACK_SIZE (1024 * 1024)
 #define CONFIGURE_INIT_TASK_INITIAL_MODES RTEMS_DEFAULT_MODES
 #define CONFIGURE_INIT_TASK_ATTRIBUTES RTEMS_FLOATING_POINT
 
