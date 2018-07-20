@@ -57,11 +57,13 @@
 #include <rtems/shell.h>
 #include <rtems/dosfs.h>
 #include <rtems/ramdisk.h>
+#include <rtems/rtems-rfs-format.h>
 
 #define RAMDISK_PATH "/dev/rda"
 #define MOUNT_PATH "/mnt"
 
 rtems_bsd_command_fio(int argc, char *argv[]);
+static const rtems_rfs_format_config rfs_config;
 
 static rtems_status_code
 media_listener(rtems_media_event event, rtems_media_state state,
@@ -130,13 +132,13 @@ Init(rtems_task_argument arg)
 	sc = rtems_task_wake_after(2);
 	assert(sc == RTEMS_SUCCESSFUL);
 
-	rv = msdos_format(RAMDISK_PATH, NULL);
+	rv = rtems_rfs_format(RAMDISK_PATH, &rfs_config);
 	assert(rv == 0);
 
 	rv = mount_and_make_target_path(
 			RAMDISK_PATH,
 			MOUNT_PATH,
-			RTEMS_FILESYSTEM_TYPE_DOSFS,
+			RTEMS_FILESYSTEM_TYPE_RFS,
 			RTEMS_FILESYSTEM_READ_WRITE,
 			NULL
 		);
@@ -159,7 +161,8 @@ size_t rtems_ramdisk_configuration_size = RTEMS_ARRAY_SIZE(rtems_ramdisk_configu
 
 #define CONFIGURE_MAXIMUM_DRIVERS 32
 
-#define CONFIGURE_FILESYSTEM_DOSFS
+#define CONFIGURE_USE_IMFS_AS_BASE_FILESYSTEM
+#define CONFIGURE_FILESYSTEM_RFS
 
 #define CONFIGURE_MAXIMUM_PROCESSORS 32
 
@@ -186,7 +189,7 @@ size_t rtems_ramdisk_configuration_size = RTEMS_ARRAY_SIZE(rtems_ramdisk_configu
 
 #define CONFIGURE_APPLICATION_EXTRA_DRIVERS RAMDISK_DRIVER_TABLE_ENTRY
 
-#define CONFIGURE_LIBIO_MAXIMUM_FILE_DESCRIPTORS 32
+#define CONFIGURE_LIBIO_MAXIMUM_FILE_DESCRIPTORS 320
 
 #define CONFIGURE_MAXIMUM_USER_EXTENSIONS 1
 
@@ -219,6 +222,7 @@ size_t rtems_ramdisk_configuration_size = RTEMS_ARRAY_SIZE(rtems_ramdisk_configu
 #define CONFIGURE_SHELL_COMMAND_CPUINFO
 #define CONFIGURE_SHELL_COMMAND_PROFREPORT
 #define CONFIGURE_SHELL_COMMAND_MKRFS
+#define CONFIGURE_SHELL_MOUNT_RFS
 
 #define CONFIGURE_SHELL_COMMAND_CP
 #define CONFIGURE_SHELL_COMMAND_PWD
