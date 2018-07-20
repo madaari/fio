@@ -19,7 +19,11 @@
 #define SMALLOC_BPL	(SMALLOC_BPB * SMALLOC_BPI)
 
 #define INITIAL_SIZE	16*1024*1024	/* new pool size */
+#ifndef __rtems__
 #define INITIAL_POOLS	8		/* maximum number of pools to setup */
+#else
+#define INITIAL_POOLS	2
+#endif
 
 #define MAX_POOLS	16
 
@@ -187,8 +191,9 @@ static bool add_pool(struct pool *pool, unsigned int alloc_size)
 
 	pool->map = ptr;
 	pool->bitmap = (unsigned int *)((char *) ptr + (pool->nr_blocks * SMALLOC_BPL));
+	printf("memset called\n");
 	memset(pool->bitmap, 0, bitmap_blocks * sizeof(unsigned int));
-
+	printf("memset done\n");
 	pool->lock = fio_sem_init(FIO_SEM_UNLOCKED);
 	if (!pool->lock)
 		goto out_fail;

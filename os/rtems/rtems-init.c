@@ -150,7 +150,7 @@ Init(rtems_task_argument arg)
 }
 
 rtems_ramdisk_config rtems_ramdisk_configuration[] ={
-	{ .block_size = 512, .block_num = 131072*1.5 }
+	{ .block_size = 512, .block_num = 131072*2 }
 };
 
 size_t rtems_ramdisk_configuration_size = RTEMS_ARRAY_SIZE(rtems_ramdisk_configuration);
@@ -193,8 +193,6 @@ size_t rtems_ramdisk_configuration_size = RTEMS_ARRAY_SIZE(rtems_ramdisk_configu
 #define CONFIGURE_UNLIMITED_ALLOCATION_SIZE 32
 #define CONFIGURE_UNLIMITED_OBJECTS
 #define CONFIGURE_UNIFIED_WORK_AREAS
-
-#define CONFIGURE_STACK_CHECKER_ENABLED
 
 /* Turn cache off */
 #define CONFIGURE_BDBUF_BUFFER_MAX_SIZE (4 * 1024)

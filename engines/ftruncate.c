@@ -46,7 +46,7 @@ void
 #else /* __rtems__ */
 static void fio_init
 #endif /* __rtems__ */
-fio_syncio_register(void)
+fio_syncio_register_ft(void)
 {
 	register_ioengine(&ioengine);
 }
@@ -56,7 +56,7 @@ void
 #else /* __rtems__ */
 static void fio_exit
 #endif /* __rtems__ */
-fio_syncio_unregister(void)
+fio_syncio_unregister_ft(void)
 {
 	unregister_ioengine(&ioengine);
 }
