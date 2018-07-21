@@ -63,7 +63,9 @@
 #define MOUNT_PATH "/mnt"
 
 rtems_bsd_command_fio(int argc, char *argv[]);
-static const rtems_rfs_format_config rfs_config;
+static const rtems_rfs_format_config rfs_config[] = {
+	{ .block_size = 1024 }
+};
 
 static rtems_status_code
 media_listener(rtems_media_event event, rtems_media_state state,
