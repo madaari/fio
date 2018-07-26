@@ -59,9 +59,15 @@
 #include <rtems/ramdisk.h>
 #include <rtems/rtems-rfs-format.h>
 
+#define USE_IMFS_ON_RAMDISK 1
 #define RAMDISK_PATH "/dev/rda"
 #define MOUNT_PATH "/mnt"
 
+#ifndef USE_IMFS_ON_RAMDISK
+#define FIO_DIR_PATH "/mnt/1"
+#else /* USE_IMFS_ON_RAMDISK */
+#define FIO_DIR_PATH "/mnt"
+#endif /* USE_IMFS_ON_RAMDISK */
 rtems_bsd_command_fio(int argc, char *argv[]);
 static const rtems_rfs_format_config rfs_config[] = {
 	{ .block_size = 1024 }
@@ -117,6 +123,7 @@ early_initialization(void)
 		RTEMS_DEFAULT_ATTRIBUTES
 	);
 	assert(sc == RTEMS_SUCCESSFUL);
+
 }
 
 void
@@ -134,6 +141,7 @@ Init(rtems_task_argument arg)
 	sc = rtems_task_wake_after(2);
 	assert(sc == RTEMS_SUCCESSFUL);
 
+#ifndef  USE_IMFS_ON_RAMDISK
 	rv = rtems_rfs_format(RAMDISK_PATH, &rfs_config);
 	assert(rv == 0);
 
@@ -145,6 +153,15 @@ Init(rtems_task_argument arg)
 			NULL
 		);
 	assert(rv == 0);
+#endif /* USE_IMFS_ON_RAMDISK */
+
+	rv = mkdir(FIO_DIR_PATH, S_IRWXU | S_IRWXG | S_IRWXO);
+	assert(rv == 0);
+
+#ifdef USE_IMFS_ON_RAMDISK
+	rv = mount(NULL, "/mnt", "imfs", RTEMS_FILESYSTEM_READ_WRITE, NULL);
+	assert(rv == 0);
+#endif /* USE_IMFS_ON_RAMDISK */
 
 	sc = rtems_shell_init("SHLL", 16 * 1024, 1, CONSOLE_DEVICE_NAME,
 		false, true, NULL);
@@ -153,18 +170,28 @@ Init(rtems_task_argument arg)
 	assert(0);
 }
 
+#ifndef USE_IMFS_ON_RAMDISK
 rtems_ramdisk_config rtems_ramdisk_configuration[] ={
 	{ .block_size = 512, .block_num = 131072*2 }
 };
 
 size_t rtems_ramdisk_configuration_size = RTEMS_ARRAY_SIZE(rtems_ramdisk_configuration);
+#endif /* USE_IMFS_ON_RAMDISK */
 
 #define CONFIGURE_MICROSECONDS_PER_TICK 1000
 
 #define CONFIGURE_MAXIMUM_DRIVERS 32
 
+#define CONFIGURE_FILESYSTEM_DOSFS
 #define CONFIGURE_USE_IMFS_AS_BASE_FILESYSTEM
 #define CONFIGURE_FILESYSTEM_RFS
+#define CONFIGURE_FILESYSTEM_IMFS
+
+/* Use default block size of IMFS when not benchmarking for IMFS */
+
+#ifdef  USE_IMFS_ON_RAMDISK
+#define CONFIGURE_IMFS_MEMFILE_BYTES_PER_BLOCK 512
+#endif /* USE_IMFS_ON_RAMDISK */
 
 #define CONFIGURE_MAXIMUM_PROCESSORS 32
 
@@ -189,7 +216,9 @@ size_t rtems_ramdisk_configuration_size = RTEMS_ARRAY_SIZE(rtems_ramdisk_configu
 #define CONFIGURE_APPLICATION_NEEDS_ZERO_DRIVER
 #define CONFIGURE_APPLICATION_NEEDS_LIBBLOCK
 
+#ifndef USE_IMFS_ON_RAMDISK
 #define CONFIGURE_APPLICATION_EXTRA_DRIVERS RAMDISK_DRIVER_TABLE_ENTRY
+#endif /* USE_IMFS_ON_RAMDISK */
 
 #define CONFIGURE_LIBIO_MAXIMUM_FILE_DESCRIPTORS 320
 
@@ -200,9 +229,9 @@ size_t rtems_ramdisk_configuration_size = RTEMS_ARRAY_SIZE(rtems_ramdisk_configu
 #define CONFIGURE_UNIFIED_WORK_AREAS
 
 /* Turn cache off */
-#define CONFIGURE_BDBUF_BUFFER_MAX_SIZE (4 * 1024)
+#define CONFIGURE_BDBUF_BUFFER_MAX_SIZE (1024)
 #define CONFIGURE_BDBUF_MAX_READ_AHEAD_BLOCKS 0
-#define CONFIGURE_BDBUF_CACHE_MEMORY_SIZE (1 * 1024 * 1024)
+#define CONFIGURE_BDBUF_CACHE_MEMORY_SIZE (10 * 1024)
 
 #define CONFIGURE_RTEMS_INIT_TASKS_TABLE
 
@@ -221,11 +250,13 @@ size_t rtems_ramdisk_configuration_size = RTEMS_ARRAY_SIZE(rtems_ramdisk_configu
 #define CONFIGURE_SHELL_USER_COMMANDS \
   &rtems_shell_fio_Command
 
+#define CONFIGURE_SHELL_COMMAND_BLKSTATS
 #define CONFIGURE_SHELL_COMMAND_CPUINFO
 #define CONFIGURE_SHELL_COMMAND_PROFREPORT
 #define CONFIGURE_SHELL_COMMAND_MKRFS
 #define CONFIGURE_SHELL_MOUNT_RFS
-
+#define CONFIGURE_SHELL_MOUNT_MSDOS
+#define CONFIGURE_SHELL_MOUNT_DOSFS
 #define CONFIGURE_SHELL_COMMAND_CP
 #define CONFIGURE_SHELL_COMMAND_PWD
 #define CONFIGURE_SHELL_COMMAND_LS
